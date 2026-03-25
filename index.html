@@ -263,6 +263,22 @@ input[type=number]{width:100px;}
           </div>
         </div>
       </div>
+
+      <!-- Resume card — shown only when a saved session exists -->
+      <div class="config-card hidden" id="resume-card" style="border-color:rgba(59,130,246,.3);background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(59,130,246,.02));">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div style="font-size:28px;">&#128204;</div>
+          <div style="flex:1;">
+            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Saved Session</div>
+            <div style="font-size:13px;color:var(--text);" id="resume-desc">-</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="resume-meta">-</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0;">
+            <button class="btn btn-practice btn-sm" onclick="resumeSession()">&#8617; Resume</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearSavedSession()">Discard</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="practice-quiz" class="hidden">
@@ -283,7 +299,7 @@ input[type=number]{width:100px;}
           <button class="btn btn-ghost btn-sm" onclick="pSkip()">Skip</button>
         </div>
         <div class="nav-right">
-          <button class="btn btn-ghost btn-sm" onclick="endPractice()">End Session</button>
+          <button class="btn btn-ghost btn-sm" onclick="endPractice()">&#128190; Save &amp; End</button>
           <button class="btn btn-practice btn-sm" onclick="pNavigate(1)" id="p-nextBtn">Next →</button>
         </div>
       </div>
@@ -311,7 +327,8 @@ input[type=number]{width:100px;}
         <div class="stat-card"><span class="stat-val blue" id="p-time">—</span><div class="stat-name">Time Taken</div></div>
       </div>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;">
-        <button class="btn btn-practice" onclick="resetPractice()">↺ New Study Session</button>
+        <button class="btn btn-practice" onclick="resetPractice()">&#8635; New Study Session</button>
+        <button class="btn btn-practice btn-sm hidden" id="p-resumeBtn" onclick="resumeSession()" style="background:rgba(59,130,246,.2);color:var(--blue);border:1px solid rgba(59,130,246,.3);">&#8617; Continue Session</button>
         <button class="btn btn-ghost" onclick="togglePracticeReview()">Review Answers</button>
       </div>
       <div class="review-section hidden" id="p-review">
@@ -401,50 +418,7 @@ input[type=number]{width:100px;}
       </div>
     </div>
 
-    <div id="exam-results" class="hidden results-wrap">
-      <div class="results-hero">
-        <div class="pass-fail-badge" id="e-passBadge">—</div>
-        <div class="score-ring">
-          <svg viewBox="0 0 170 170" width="170" height="170">
-            <circle class="ring-bg" cx="85" cy="85" r="74"/>
-            <circle class="ring-fill" id="e-ringFill" cx="85" cy="85" r="74" stroke-dasharray="464.9" stroke-dashoffset="464.9" stroke="var(--accent)"/>
-          </svg>
-          <div class="score-center">
-            <span class="score-pct" id="e-scorePct">0%</span>
-            <span class="score-fraction" id="e-scoreFrac"></span>
-          </div>
-        </div>
-        <div class="results-headline" id="e-resultsTitle">Exam Complete</div>
-        <div class="results-sub" id="e-resultsSub"></div>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-card"><span class="stat-val green" id="e-correct">0</span><div class="stat-name">Correct</div></div>
-        <div class="stat-card"><span class="stat-val red" id="e-wrong">0</span><div class="stat-name">Wrong</div></div>
-        <div class="stat-card"><span class="stat-val amber" id="e-skipped">0</span><div class="stat-name">Unanswered</div></div>
-        <div class="stat-card"><span class="stat-val blue" id="e-numScore">0/3</span><div class="stat-name">Numerical</div></div>
-      </div>
-      <div class="config-card" style="margin-bottom:20px;">
-        <h3>Score Breakdown</h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;">
-          <div><div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Raw Score</div><div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;" id="e-rawScore">—</div></div>
-          <div><div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Percentage</div><div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;" id="e-pctScore">—</div></div>
-          <div><div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Pass Mark</div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--muted);">70 / 100 (70%)</div></div>
-          <div><div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Result</div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;" id="e-resultWord">—</div></div>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;">
-        <button class="btn btn-exam" onclick="resetExam()">↺ Retake Exam</button>
-        <button class="btn btn-ghost" onclick="toggleExamReview()">Review All Answers</button>
-      </div>
-      <div class="review-section hidden" id="e-review">
-        <div class="review-toolbar">
-          <button class="filter-btn fa" onclick="filterEReview('all',this)">All</button>
-          <button class="filter-btn" onclick="filterEReview('wrong',this)">Wrong</button>
-          <button class="filter-btn" onclick="filterEReview('correct',this)">Correct</button>
-        </div>
-        <div id="e-reviewCards"></div>
-      </div>
-    </div>
+
   </div>
 </div>
 
@@ -478,8 +452,51 @@ function switchTab(tab){
   btns[1].className='tab-btn'+(tab==='exam'?' active-exam':'');
 }
 
-// ══════════ PRACTICE ══════════
+// ══════════ PRACTICE / STUDY ══════════
 let pQs=[],pAnswers=[],pCurrent=0,pStopInt=null,pElapsed=0;
+let savedSession=null; // persists in memory across home visits
+
+// ── Session save/restore ──
+function saveSession(){
+  savedSession={
+    pQs:pQs.map(q=>({...q})),
+    pAnswers:[...pAnswers],
+    pCurrent,
+    pElapsed,
+    savedAt:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
+  };
+}
+
+function loadResumeCard(){
+  const card=document.getElementById('resume-card');
+  if(!savedSession){card.classList.add('hidden');return;}
+  const answered=savedSession.pAnswers.filter(a=>a!==null).length;
+  const total=savedSession.pQs.length;
+  const remaining=total-savedSession.pCurrent;
+  document.getElementById('resume-desc').textContent=
+    `Q${savedSession.pCurrent+1} of ${total} — ${answered} answered, ${remaining} remaining`;
+  document.getElementById('resume-meta').textContent=
+    `Saved at ${savedSession.savedAt} · Time elapsed: ${fmtTime(savedSession.pElapsed)}`;
+  card.classList.remove('hidden');
+}
+
+function resumeSession(){
+  if(!savedSession)return;
+  pQs=savedSession.pQs;
+  pAnswers=savedSession.pAnswers;
+  pCurrent=savedSession.pCurrent;
+  pElapsed=savedSession.pElapsed;
+  document.getElementById('practice-home').classList.add('hidden');
+  document.getElementById('practice-quiz').classList.remove('hidden');
+  clearInterval(pStopInt);
+  pStopInt=setInterval(()=>{pElapsed++;document.getElementById('p-stopwatch').textContent=fmtTime(pElapsed);},1000);
+  pRender();
+}
+
+function clearSavedSession(){
+  savedSession=null;
+  document.getElementById('resume-card').classList.add('hidden');
+}
 
 function startPractice(){
   const n=Math.min(parseInt(document.getElementById('practiceNum').value)||20,ALL_QS.length);
@@ -489,6 +506,8 @@ function startPractice(){
   }));
   pAnswers=new Array(n).fill(null);
   pCurrent=0;pElapsed=0;
+  savedSession=null; // new session clears old save
+  document.getElementById('resume-card').classList.add('hidden');
   document.getElementById('practice-home').classList.add('hidden');
   document.getElementById('practice-quiz').classList.remove('hidden');
   clearInterval(pStopInt);
@@ -542,7 +561,7 @@ function showPFeedback(){
   if(pAnswers[pCurrent]===null){fb.classList.remove('show');return;}
   const ok=pAnswers[pCurrent]===pQs[pCurrent].correct;
   fb.className=`feedback show ${ok?'correct-fb':'wrong-fb'}`;
-  fb.innerHTML=ok?`✓ Correct!`:`✗ Incorrect — correct answer: <strong>${pQs[pCurrent].correct}</strong>`;
+  fb.innerHTML=ok?`&#10003; Correct!`:`&#10007; Incorrect — correct answer: <strong>${pQs[pCurrent].correct}</strong>`;
 }
 
 function pNavigate(d){pCurrent=Math.max(0,Math.min(pQs.length-1,pCurrent+d));pRender();}
@@ -550,6 +569,14 @@ function pSkip(){if(pCurrent<pQs.length-1)pNavigate(1);}
 
 function endPractice(){
   clearInterval(pStopInt);
+  // only save if session is incomplete (not all answered or not on last Q)
+  const allAnswered=pAnswers.every(a=>a!==null);
+  const atEnd=pCurrent===pQs.length-1&&allAnswered;
+  if(!atEnd){
+    saveSession();
+  } else {
+    savedSession=null;
+  }
   document.getElementById('practice-quiz').classList.add('hidden');
   showPracticeResults();
 }
@@ -562,16 +589,25 @@ function showPracticeResults(){
     else if(pAnswers[i]===q.correct)correct++;
     else wrong++;
   });
-  const pct=Math.round(correct/pQs.length*100);
+  const answered=pQs.length-skipped;
+  const pct=answered>0?Math.round(correct/answered*100):0;
   document.getElementById('p-scorePct').textContent=pct+'%';
-  document.getElementById('p-scoreFrac').textContent=`${correct} / ${pQs.length}`;
+  document.getElementById('p-scoreFrac').textContent=`${correct} / ${answered} answered`;
   document.getElementById('p-correct').textContent=correct;
   document.getElementById('p-wrong').textContent=wrong;
   document.getElementById('p-skipped').textContent=skipped;
   document.getElementById('p-time').textContent=fmtTime(pElapsed);
   document.getElementById('p-time').style.fontSize='18px';
-  document.getElementById('p-resultsTitle').textContent=pct>=80?'Excellent Work! 🎉':pct>=60?'Good Effort! 📖':'Keep Studying! 💪';
-  document.getElementById('p-resultsSub').textContent=`${correct} correct out of ${pQs.length} — completed in ${fmtTime(pElapsed)}`;
+  const incomplete=skipped>0;
+  document.getElementById('p-resultsTitle').textContent=incomplete?'Session Saved &#128204;':(pct>=80?'Excellent Work! &#127881;':pct>=60?'Good Effort! &#128218;':'Keep Studying! &#128170;');
+  document.getElementById('p-resultsSub').textContent=incomplete
+    ?`Paused at Q${pCurrent+1} of ${pQs.length} — ${skipped} question${skipped!==1?'s':''} remaining. Resume anytime.`
+    :`${correct} correct out of ${answered} — completed in ${fmtTime(pElapsed)}`;
+
+  // show/hide resume button on results page
+  const resumeBtn=document.getElementById('p-resumeBtn');
+  if(resumeBtn)resumeBtn.classList.toggle('hidden',!savedSession);
+
   const circ=464.9;
   setTimeout(()=>{document.getElementById('p-ringFill').style.strokeDashoffset=circ-(pct/100)*circ;},100);
   buildPReview();
@@ -589,7 +625,7 @@ function buildPReview(){
       let cls=opt===q.correct?'rco':opt===ua&&!isC?'rwo':'rno';
       return `<div class="rev-opt ${cls}">${L[j]}. ${opt}</div>`;
     }).join('');
-    card.innerHTML=`<div class="q-meta"><span class="q-num practice-num">Q${i+1}</span></div><div class="review-q">${q.question}</div><div class="review-answers">${opts}</div><div class="your-answer">${ua?`Your answer: <span style="color:${isC?'var(--correct)':'var(--wrong)'}">${ua}</span>`:'Skipped'}</div>`;
+    card.innerHTML=`<div class="q-meta"><span class="q-num practice-num">Q${i+1}</span>${ua===null?'<span style="font-size:11px;color:var(--muted);font-family:Syne,sans-serif;letter-spacing:.08em;text-transform:uppercase;">Not reached</span>':''}</div><div class="review-q">${q.question}</div><div class="review-answers">${opts}</div><div class="your-answer">${ua?`Your answer: <span style="color:${isC?'var(--correct)':'var(--wrong)'}">${ua}</span>`:'Not answered yet'}</div>`;
     wrap.appendChild(card);
   });
 }
@@ -600,11 +636,13 @@ function filterPReview(type,btn){
   document.querySelectorAll('#p-reviewCards .review-card').forEach(c=>{c.classList.toggle('hidden',type!=='all'&&c.dataset.result!==type);});
 }
 function togglePracticeReview(){document.getElementById('p-review').classList.toggle('hidden');}
+
 function resetPractice(){
   clearInterval(pStopInt);
   document.getElementById('practice-results').classList.add('hidden');
   document.getElementById('practice-quiz').classList.add('hidden');
   document.getElementById('p-review').classList.add('hidden');
+  loadResumeCard(); // show resume card if a saved session exists
   document.getElementById('practice-home').classList.remove('hidden');
 }
 
@@ -709,10 +747,10 @@ function closeModal(){document.getElementById('submitModal').style.display='none
 function submitExam(){
   closeModal();clearInterval(eTimerInt);
   document.getElementById('exam-quiz').classList.add('hidden');
-  computeAndShowExamResults();
+  computeExamResults();
 }
 
-function computeAndShowExamResults(){
+function computeExamResults(){
   let correct=0,wrong=0,skipped=0,numCorrect=0;
   const qRecord=[];
   eQs.forEach((q,i)=>{
@@ -724,97 +762,36 @@ function computeAndShowExamResults(){
       if(isC){correct++;if(q.type==='numerical')numCorrect++;}
       else wrong++;
     }
-    qRecord.push({text:q.question,ua,correct:q.correct,isC,type:q.type||'mcq'});
+    qRecord.push({text:q.question,ua,correct:q.correct,isC,type:q.type||'mcq',shuffledOpts:q.shuffledOpts||null});
   });
   const pct=Math.round(correct/100*100);
   const passed=pct>=70;
 
-  // save to history (keep last 3)
   examHistory.unshift({
     date:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),
-    correct,pct,passed,questions:qRecord
+    correct,wrong,skipped,numCorrect,pct,passed,questions:qRecord
   });
   if(examHistory.length>3)examHistory.pop();
 
-  showExamResults(correct,wrong,skipped,numCorrect,pct,passed);
+  renderHistory(true);
+  document.getElementById('exam-home').classList.remove('hidden');
+  setTimeout(()=>{
+    const card=document.getElementById('historyCard');
+    if(card)card.scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
 }
 
-function showExamResults(correct,wrong,skipped,numCorrect,pct,passed){
-  document.getElementById('exam-results').classList.remove('hidden');
-  document.getElementById('e-scorePct').textContent=pct+'%';
-  document.getElementById('e-scorePct').style.color=passed?'var(--correct)':'var(--wrong)';
-  document.getElementById('e-scoreFrac').textContent=`${correct} / 100`;
-  document.getElementById('e-correct').textContent=correct;
-  document.getElementById('e-wrong').textContent=wrong;
-  document.getElementById('e-skipped').textContent=skipped;
-  document.getElementById('e-numScore').textContent=`${numCorrect}/3`;
-  document.getElementById('e-rawScore').textContent=`${correct} / 100`;
-  document.getElementById('e-rawScore').style.color=passed?'var(--correct)':'var(--wrong)';
-  document.getElementById('e-pctScore').textContent=`${pct}%`;
-  document.getElementById('e-pctScore').style.color=passed?'var(--correct)':'var(--wrong)';
-  const badge=document.getElementById('e-passBadge');
-  badge.textContent=passed?'✓ PASSED':'✗ FAILED';
-  badge.className=`pass-fail-badge ${passed?'badge-pass':'badge-fail'}`;
-  document.getElementById('e-resultsTitle').textContent=passed?'Congratulations! You Passed 🎉':'You Did Not Pass This Time';
-  document.getElementById('e-resultsSub').textContent=passed
-    ?`${correct}/100 (${pct}%) — above the 70% pass mark`
-    :`${correct}/100 (${pct}%) — need ${70-correct} more mark${70-correct!==1?'s':''} to pass`;
-  document.getElementById('e-resultWord').textContent=passed?'PASS ✓':'FAIL ✗';
-  document.getElementById('e-resultWord').style.color=passed?'var(--correct)':'var(--wrong)';
-  const ring=document.getElementById('e-ringFill');
-  ring.style.stroke=passed?'var(--correct)':'var(--wrong)';
-  const circ=464.9;
-  setTimeout(()=>{ring.style.strokeDashoffset=circ-(pct/100)*circ;},100);
-  buildEReview();
-}
 
-function buildEReview(){
-  const wrap=document.getElementById('e-reviewCards');wrap.innerHTML='';
-  const L=['A','B','C','D'];
-  eQs.forEach((q,i)=>{
-    const ua=eAnswers[i];
-    const isC=ua===null?false:q.type==='numerical'?ua.trim()===q.correct.trim():ua===q.correct;
-    const card=document.createElement('div');
-    card.className=`review-card ${ua===null?'':isC?'rc':'rw'}`;
-    card.dataset.result=ua===null?'skipped':isC?'correct':'wrong';
-    let body='';
-    if(q.type==='numerical'){
-      body=`<div class="review-answers">
-        <div class="rev-opt ${isC?'rco':'rwo'}">Your answer: ${ua||'(unanswered)'}</div>
-        <div class="rev-opt rco">Correct answer: ${q.correct}</div>
-        ${q.hint?`<div class="rev-opt rno" style="font-size:11px;">Hint: ${q.hint}</div>`:''}
-      </div>`;
-    } else {
-      const opts=q.shuffledOpts.map((opt,j)=>{
-        let cls=opt===q.correct?'rco':opt===ua&&!isC?'rwo':'rno';
-        return `<div class="rev-opt ${cls}">${L[j]}. ${opt}</div>`;
-      }).join('');
-      body=`<div class="review-answers">${opts}</div><div class="your-answer">${ua?`Your answer: <span style="color:${isC?'var(--correct)':'var(--wrong)'}">${ua}</span>`:'Unanswered'}</div>`;
-    }
-    const nb=q.type==='numerical'?'<span class="q-type-badge" style="margin-left:6px;">Numerical</span>':'';
-    card.innerHTML=`<div class="q-meta"><span class="q-num ${q.type==='numerical'?'numerical-num':'exam-num'}">Q${i+1}</span>${nb}</div><div class="review-q">${q.question}</div>${body}`;
-    wrap.appendChild(card);
-  });
-}
-
-function filterEReview(type,btn){
-  document.querySelectorAll('#e-review .filter-btn').forEach(b=>b.className='filter-btn');
-  btn.className=`filter-btn f${type[0]}`;
-  document.querySelectorAll('#e-reviewCards .review-card').forEach(c=>{c.classList.toggle('hidden',type!=='all'&&c.dataset.result!==type);});
-}
-function toggleExamReview(){document.getElementById('e-review').classList.toggle('hidden');}
 
 function resetExam(){
   clearInterval(eTimerInt);
-  document.getElementById('exam-results').classList.add('hidden');
   document.getElementById('exam-quiz').classList.add('hidden');
-  document.getElementById('e-review').classList.add('hidden');
-  renderHistory();
+  renderHistory(false);
   document.getElementById('exam-home').classList.remove('hidden');
 }
 
 // ══════════ HISTORY ══════════
-function renderHistory(){
+function renderHistory(expandLatest){
   const list=document.getElementById('historyList');
   if(examHistory.length===0){
     list.innerHTML='<div class="no-history">No exam history yet. Take your first mock exam!</div>';
@@ -822,10 +799,11 @@ function renderHistory(){
   }
   list.innerHTML='';
   examHistory.forEach((h,idx)=>{
+    // ── header row ──
     const item=document.createElement('div');
     item.className=`history-item ${h.passed?'h-pass':'h-fail'}`;
     item.innerHTML=`
-      <div class="history-num">#${idx===0?'Latest':idx===1?'2nd':'3rd'}</div>
+      <div class="history-num">${idx===0?'Latest':idx===1?'2nd':'3rd'}</div>
       <div class="history-score ${h.passed?'pass':'fail'}">${h.pct}%</div>
       <div class="history-meta">
         <strong style="color:var(--text)">${h.correct}/100 points</strong><br>
@@ -833,38 +811,80 @@ function renderHistory(){
       </div>
       <span class="history-badge ${h.passed?'hb-pass':'hb-fail'}">${h.passed?'PASS':'FAIL'}</span>
     `;
-    item.addEventListener('click',()=>toggleHistoryExpand(idx,item));
+    item.addEventListener('click',()=>toggleHistoryExpand(idx));
     list.appendChild(item);
-    // expand area
+
+    // ── expandable detail panel ──
     const exp=document.createElement('div');
     exp.className='history-expand';exp.id=`hexp-${idx}`;
     const wrongQs=h.questions.filter(q=>!q.isC);
-    const numToShow=Math.min(wrongQs.length,10);
-    exp.innerHTML=`
-      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">
-        ${wrongQs.length} wrong answer${wrongQs.length!==1?'s':''} — showing first ${numToShow}
-      </div>
-      ${wrongQs.slice(0,numToShow).map((q,qi)=>`
-        <div class="expand-q">
-          <div class="eq-text" style="font-size:12.5px;margin-bottom:3px;">${qi+1}. ${q.text.length>80?q.text.slice(0,80)+'…':q.text}</div>
-          <div class="eq-ans">
-            <span class="eq-wrong">Your: ${q.ua||'(unanswered)'}</span>
-            &nbsp;·&nbsp;
-            <span class="eq-correct">Correct: ${q.correct}</span>
-          </div>
+    const numToShow=Math.min(wrongQs.length,15);
+
+    // score breakdown mini-grid
+    const scoreGrid=`
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--correct);">${h.correct}</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Correct</div>
         </div>
-      `).join('')}
-      ${wrongQs.length===0?'<div style="color:var(--correct);font-size:13px;">🎉 Perfect score on this attempt!</div>':''}
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--wrong);">${h.wrong||0}</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Wrong</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent);">${h.skipped||0}</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Skipped</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--blue);">${h.numCorrect||0}/3</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Numerical</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 14px;border-radius:8px;background:${h.passed?'rgba(34,197,94,.08)':'rgba(239,68,68,.08)'};border:1px solid ${h.passed?'rgba(34,197,94,.2)':'rgba(239,68,68,.2)'};margin-bottom:16px;">
+        <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:${h.passed?'var(--correct)':'var(--wrong)'};">${h.correct}/100</div>
+        <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:${h.passed?'var(--correct)':'var(--wrong)'};">${h.pct}%</div>
+        <div style="flex:1;font-size:13px;color:var(--muted);">${h.passed?'Above 70% pass mark — Congratulations!':'Below 70% pass mark — '+((70-h.correct)>0?(70-h.correct)+' more mark'+(70-h.correct!==1?'s':'')+ ' needed':'')}</div>
+      </div>
     `;
+
+    const wrongSection = wrongQs.length===0
+      ? '<div style="color:var(--correct);font-size:13px;padding:10px 0;">&#127881; Perfect score — all questions correct!</div>'
+      : `<div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">
+          ${wrongQs.length} incorrect answer${wrongQs.length!==1?'s':''} — showing first ${numToShow}
+        </div>
+        ${wrongQs.slice(0,numToShow).map((q,qi)=>`
+          <div class="expand-q">
+            <div class="eq-text" style="font-size:12.5px;margin-bottom:4px;">${qi+1}. ${q.text.length>100?q.text.slice(0,100)+'…':q.text}</div>
+            <div class="eq-ans">
+              <span class="eq-wrong">&#10007; Your: ${q.ua||'(unanswered)'}</span>
+              &nbsp;&nbsp;
+              <span class="eq-correct">&#10003; Correct: ${q.correct}</span>
+            </div>
+          </div>
+        `).join('')}`;
+
+    exp.innerHTML = scoreGrid + wrongSection;
     list.appendChild(exp);
+
+    // auto-expand latest after submit
+    if(expandLatest && idx===0){
+      exp.classList.add('open');
+      item.style.borderBottom='none';
+    }
   });
 }
 
-function toggleHistoryExpand(idx,item){
+function toggleHistoryExpand(idx){
   const exp=document.getElementById(`hexp-${idx}`);
   if(!exp)return;
-  exp.classList.toggle('open');
-  item.style.borderBottom=exp.classList.contains('open')?'none':'';
+  const isOpen=exp.classList.contains('open');
+  // close all first
+  document.querySelectorAll('.history-expand').forEach(e=>e.classList.remove('open'));
+  document.querySelectorAll('.history-item').forEach(e=>e.style.borderBottom='');
+  if(!isOpen){
+    exp.classList.add('open');
+    document.querySelectorAll('.history-item')[idx].style.borderBottom='none';
+  }
 }
 </script>
 </body>
