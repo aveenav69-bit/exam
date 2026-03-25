@@ -215,6 +215,12 @@ input[type=number]{width:100px;}
   .exam-info{grid-template-columns:repeat(2,1fr);}
   .q-text{font-size:15px;}
 }
+
+/* ── REVIEW MODAL FILTER BTNS ── */
+.rm-filter-btn{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 14px;border-radius:7px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;}
+.rm-filter-btn.active{background:var(--blue);color:#fff;}
+.rm-filter-btn[data-filter="wrong"].active{background:var(--wrong);}
+.rm-filter-btn[data-filter="correct"].active{background:var(--correct);color:#000;}
 </style>
 </head>
 <body>
@@ -422,6 +428,28 @@ input[type=number]{width:100px;}
   </div>
 </div>
 
+
+<!-- REVIEW MODAL -->
+<div id="reviewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);z-index:200;overflow-y:auto;">
+  <div style="max-width:860px;margin:0 auto;padding:24px 20px 60px;">
+    <!-- Modal header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:sticky;top:0;background:rgba(7,9,14,.95);backdrop-filter:blur(12px);padding:16px 0;z-index:10;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;" id="rm-label">Test Review</div>
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;" id="rm-title">All Questions</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:4px;">
+          <button class="rm-filter-btn active" data-filter="all" onclick="setReviewFilter('all')">All</button>
+          <button class="rm-filter-btn" data-filter="wrong" onclick="setReviewFilter('wrong')">Wrong</button>
+          <button class="rm-filter-btn" data-filter="correct" onclick="setReviewFilter('correct')">Correct</button>
+        </div>
+        <button onclick="closeReviewModal()" style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;padding:9px 18px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);cursor:pointer;">&#10005; Close</button>
+      </div>
+    </div>
+    <div id="rm-cards"></div>
+  </div>
+</div>
 <!-- MODAL -->
 <div id="submitModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center;">
   <div class="modal-box">
@@ -817,9 +845,6 @@ function renderHistory(expandLatest){
     // ── expandable detail panel ──
     const exp=document.createElement('div');
     exp.className='history-expand';exp.id=`hexp-${idx}`;
-    const wrongQs=h.questions.filter(q=>!q.isC);
-    const numToShow=Math.min(wrongQs.length,15);
-
     // score breakdown mini-grid
     const scoreGrid=`
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
@@ -845,25 +870,14 @@ function renderHistory(expandLatest){
         <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:${h.passed?'var(--correct)':'var(--wrong)'};">${h.pct}%</div>
         <div style="flex:1;font-size:13px;color:var(--muted);">${h.passed?'Above 70% pass mark — Congratulations!':'Below 70% pass mark — '+((70-h.correct)>0?(70-h.correct)+' more mark'+(70-h.correct!==1?'s':'')+ ' needed':'')}</div>
       </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" onclick="openReviewModal(${idx},'all')" style="font-size:12px;">&#128196; View All Questions</button>
+        <button class="btn btn-ghost btn-sm" onclick="openReviewModal(${idx},'wrong')" style="font-size:12px;color:var(--wrong);border-color:rgba(239,68,68,.3);">&#10007; Wrong Only (${h.wrong||0})</button>
+        <button class="btn btn-ghost btn-sm" onclick="openReviewModal(${idx},'correct')" style="font-size:12px;color:var(--correct);border-color:rgba(34,197,94,.3);">&#10003; Correct Only (${h.correct})</button>
+      </div>
     `;
 
-    const wrongSection = wrongQs.length===0
-      ? '<div style="color:var(--correct);font-size:13px;padding:10px 0;">&#127881; Perfect score — all questions correct!</div>'
-      : `<div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">
-          ${wrongQs.length} incorrect answer${wrongQs.length!==1?'s':''} — showing first ${numToShow}
-        </div>
-        ${wrongQs.slice(0,numToShow).map((q,qi)=>`
-          <div class="expand-q">
-            <div class="eq-text" style="font-size:12.5px;margin-bottom:4px;">${qi+1}. ${q.text.length>100?q.text.slice(0,100)+'…':q.text}</div>
-            <div class="eq-ans">
-              <span class="eq-wrong">&#10007; Your: ${q.ua||'(unanswered)'}</span>
-              &nbsp;&nbsp;
-              <span class="eq-correct">&#10003; Correct: ${q.correct}</span>
-            </div>
-          </div>
-        `).join('')}`;
-
-    exp.innerHTML = scoreGrid + wrongSection;
+    exp.innerHTML = scoreGrid;
     list.appendChild(exp);
 
     // auto-expand latest after submit
@@ -886,6 +900,100 @@ function toggleHistoryExpand(idx){
     document.querySelectorAll('.history-item')[idx].style.borderBottom='none';
   }
 }
+
+// ══════════ REVIEW MODAL ══════════
+let rmHistory=null, rmFilter='all';
+
+function openReviewModal(histIdx, filter){
+  rmHistory=examHistory[histIdx];
+  rmFilter=filter||'all';
+  document.getElementById('reviewModal').style.display='block';
+  document.body.style.overflow='hidden';
+  document.getElementById('rm-label').textContent=
+    histIdx===0?'Latest Test':histIdx===1?'2nd Test':'3rd Test';
+  setReviewFilter(rmFilter);
+  document.getElementById('reviewModal').scrollTop=0;
+}
+
+function closeReviewModal(){
+  document.getElementById('reviewModal').style.display='none';
+  document.body.style.overflow='';
+}
+
+function setReviewFilter(filter){
+  rmFilter=filter;
+  document.querySelectorAll('.rm-filter-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.filter===filter);
+  });
+  const titles={all:'All Questions',wrong:'Wrong Answers',correct:'Correct Answers'};
+  document.getElementById('rm-title').textContent=titles[filter];
+  buildReviewModalCards();
+}
+
+function buildReviewModalCards(){
+  const wrap=document.getElementById('rm-cards');
+  wrap.innerHTML='';
+  if(!rmHistory)return;
+  const L=['A','B','C','D'];
+  const qs=rmHistory.questions.filter(q=>{
+    if(rmFilter==='all')return true;
+    if(rmFilter==='wrong')return !q.isC;
+    if(rmFilter==='correct')return q.isC;
+  });
+  if(qs.length===0){
+    wrap.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">No questions to show.</div>';
+    return;
+  }
+  qs.forEach((q,display_i)=>{
+    const origIdx=rmHistory.questions.indexOf(q);
+    const isNum=q.type==='numerical';
+    const card=document.createElement('div');
+    card.className=`review-card ${q.isC?'rc':q.ua?'rw':''}`;
+    card.style.marginBottom='12px';
+    let body='';
+    if(isNum){
+      body=`<div class="review-answers">
+        <div class="rev-opt ${q.isC?'rco':'rwo'}">Your answer: <strong>${q.ua||'(unanswered)'}</strong></div>
+        <div class="rev-opt rco">Correct answer: <strong>${q.correct}</strong></div>
+      </div>`;
+    } else if(q.shuffledOpts){
+      const opts=q.shuffledOpts.map((opt,j)=>{
+        let cls=opt===q.correct?'rco':opt===q.ua&&!q.isC?'rwo':'rno';
+        return `<div class="rev-opt ${cls}">${L[j]}. ${opt}</div>`;
+      }).join('');
+      body=`<div class="review-answers">${opts}</div>
+        <div class="your-answer">${q.ua
+          ?`Your answer: <span style="color:${q.isC?'var(--correct)':'var(--wrong)'}">${q.ua}</span>`
+          :'Unanswered'}</div>`;
+    } else {
+      // fallback if no shuffledOpts stored
+      body=`<div class="review-answers">
+        <div class="rev-opt ${q.isC?'rco':'rwo'}">Your answer: ${q.ua||'(unanswered)'}</div>
+        <div class="rev-opt rco">Correct answer: ${q.correct}</div>
+      </div>`;
+    }
+    const numBadge=isNum?'<span class="q-type-badge" style="margin-left:6px;">Numerical</span>':'';
+    const resultBadge=q.isC
+      ?'<span style="font-family:Syne,sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:rgba(34,197,94,.1);color:var(--correct);border:1px solid rgba(34,197,94,.2);">&#10003; Correct</span>'
+      :q.ua
+        ?'<span style="font-family:Syne,sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:rgba(239,68,68,.1);color:var(--wrong);border:1px solid rgba(239,68,68,.2);">&#10007; Wrong</span>'
+        :'<span style="font-family:Syne,sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:rgba(240,165,0,.1);color:var(--accent);border:1px solid rgba(240,165,0,.2);">&#8212; Skipped</span>';
+    card.innerHTML=`
+      <div class="q-meta">
+        <span class="q-num ${isNum?'numerical-num':'exam-num'}">Q${origIdx+1}</span>
+        ${numBadge}
+        ${resultBadge}
+      </div>
+      <div class="review-q" style="font-size:15px;font-weight:400;line-height:1.6;">${q.text}</div>
+      ${body}`;
+    wrap.appendChild(card);
+  });
+}
+
+// Close modal on backdrop click
+document.getElementById('reviewModal').addEventListener('click',function(e){
+  if(e.target===this)closeReviewModal();
+});
 </script>
 </body>
 </html>
