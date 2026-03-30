@@ -221,6 +221,18 @@ input[type=number]{width:100px;}
 .rm-filter-btn.active{background:var(--blue);color:#fff;}
 .rm-filter-btn[data-filter="wrong"].active{background:var(--wrong);}
 .rm-filter-btn[data-filter="correct"].active{background:var(--correct);color:#000;}
+
+/* ── STUDY NAV GRID ── */
+.study-nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:5px;margin-bottom:4px;}
+.sng-cell{width:34px;height:34px;border-radius:7px;border:1px solid var(--border);font-family:'Syne',sans-serif;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;background:var(--surface);color:var(--muted);}
+.sng-cell:hover{border-color:var(--blue);color:var(--blue);}
+.sng-cell.sng-correct{background:rgba(34,197,94,.18);border-color:rgba(34,197,94,.5);color:var(--correct);}
+.sng-cell.sng-wrong{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.5);color:var(--wrong);}
+.sng-cell.sng-skipped{background:rgba(59,130,246,.18);border-color:rgba(59,130,246,.5);color:var(--blue);}
+.sng-cell.sng-current{box-shadow:0 0 0 2px var(--blue);border-color:var(--blue);}
+.sng-legend{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}
+.sng-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
+.sng-legend-dot{width:10px;height:10px;border-radius:3px;}
 </style>
 </head>
 <body>
@@ -293,6 +305,16 @@ input[type=number]{width:100px;}
         <div class="progress-label" id="p-progressLabel">0 / 0</div>
         <div class="timer-badge practice-timer" id="p-stopwatch">00:00</div>
       </div>
+      <div class="config-card" style="padding:14px 18px;margin-bottom:14px;">
+        <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">Question Map — Click to Jump</div>
+        <div class="study-nav-grid" id="p-navGrid"></div>
+        <div class="sng-legend">
+          <div class="sng-legend-item"><div class="sng-legend-dot" style="background:rgba(34,197,94,.4);border:1px solid rgba(34,197,94,.6);"></div>Correct</div>
+          <div class="sng-legend-item"><div class="sng-legend-dot" style="background:rgba(239,68,68,.4);border:1px solid rgba(239,68,68,.6);"></div>Wrong</div>
+          <div class="sng-legend-item"><div class="sng-legend-dot" style="background:rgba(59,130,246,.4);border:1px solid rgba(59,130,246,.6);"></div>Skipped</div>
+          <div class="sng-legend-item"><div class="sng-legend-dot" style="background:var(--surface);border:1px solid var(--border);"></div>Not visited</div>
+        </div>
+      </div>
       <div class="q-card">
         <div class="q-meta"><span class="q-num practice-num" id="p-qNum">Q 1</span></div>
         <div class="q-text" id="p-qText"></div>
@@ -334,7 +356,6 @@ input[type=number]{width:100px;}
       </div>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;">
         <button class="btn btn-practice" onclick="resetPractice()">&#8635; New Study Session</button>
-        <button class="btn btn-practice btn-sm hidden" id="p-resumeBtn" onclick="resumeSession()" style="background:rgba(59,130,246,.2);color:var(--blue);border:1px solid rgba(59,130,246,.3);">&#8617; Continue Session</button>
         <button class="btn btn-ghost" onclick="togglePracticeReview()">Review Answers</button>
       </div>
       <div class="review-section hidden" id="p-review">
@@ -515,9 +536,11 @@ function resumeSession(){
   pCurrent=savedSession.pCurrent;
   pElapsed=savedSession.pElapsed;
   document.getElementById('practice-home').classList.add('hidden');
+  document.getElementById('practice-results').classList.add('hidden');
   document.getElementById('practice-quiz').classList.remove('hidden');
   clearInterval(pStopInt);
   pStopInt=setInterval(()=>{pElapsed++;document.getElementById('p-stopwatch').textContent=fmtTime(pElapsed);},1000);
+  buildStudyNavGrid();
   pRender();
 }
 
@@ -540,6 +563,7 @@ function startPractice(){
   document.getElementById('practice-quiz').classList.remove('hidden');
   clearInterval(pStopInt);
   pStopInt=setInterval(()=>{pElapsed++;document.getElementById('p-stopwatch').textContent=fmtTime(pElapsed);},1000);
+  buildStudyNavGrid();
   pRender();
 }
 
@@ -568,6 +592,36 @@ function pRender(){
   showPFeedback();
   document.getElementById('p-prevBtn').disabled=pCurrent===0;
   document.getElementById('p-nextBtn').disabled=pCurrent===pQs.length-1;
+  updateStudyNavGrid();
+}
+
+function buildStudyNavGrid(){
+  const grid=document.getElementById('p-navGrid');
+  grid.innerHTML='';
+  pQs.forEach((_,i)=>{
+    const cell=document.createElement('div');
+    cell.className='sng-cell';
+    cell.textContent=i+1;
+    cell.id=`sng-${i}`;
+    cell.addEventListener('click',()=>{pCurrent=i;pRender();});
+    grid.appendChild(cell);
+  });
+}
+
+function updateStudyNavGrid(){
+  pQs.forEach((q,i)=>{
+    const cell=document.getElementById(`sng-${i}`);
+    if(!cell)return;
+    const ua=pAnswers[i];
+    cell.className='sng-cell';
+    if(i===pCurrent)cell.classList.add('sng-current');
+    if(ua===null){
+      // not yet answered — no colour, but if we've visited past it, mark skipped
+      if(i<pCurrent)cell.classList.add('sng-skipped');
+    } else {
+      cell.classList.add(ua===q.correct?'sng-correct':'sng-wrong');
+    }
+  });
 }
 
 function pSelect(opt,el){
@@ -631,10 +685,6 @@ function showPracticeResults(){
   document.getElementById('p-resultsSub').textContent=incomplete
     ?`Paused at Q${pCurrent+1} of ${pQs.length} — ${skipped} question${skipped!==1?'s':''} remaining. Resume anytime.`
     :`${correct} correct out of ${answered} — completed in ${fmtTime(pElapsed)}`;
-
-  // show/hide resume button on results page
-  const resumeBtn=document.getElementById('p-resumeBtn');
-  if(resumeBtn)resumeBtn.classList.toggle('hidden',!savedSession);
 
   const circ=464.9;
   setTimeout(()=>{document.getElementById('p-ringFill').style.strokeDashoffset=circ-(pct/100)*circ;},100);
