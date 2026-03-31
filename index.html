@@ -293,16 +293,6 @@ input[type=number]{width:100px;}
 .login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border);}
 .login-divider span{font-size:11px;color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
 
-.login-demo{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
-.login-demo-title{font-size:11px;font-family:'Syne',sans-serif;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
-.demo-account{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .15s;}
-.demo-account:last-child{border-bottom:none;padding-bottom:0;}
-.demo-account:hover{opacity:.75;}
-.demo-info{font-size:12.5px;}
-.demo-email{color:var(--text);font-weight:400;}
-.demo-role{font-size:10px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:1px;}
-.demo-fill{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;}
-
 /* User badge in header */
 .user-badge{
   display:none;align-items:center;gap:10px;
@@ -377,32 +367,6 @@ input[type=number]{width:100px;}
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
 
     <div class="switch-link" style="margin-top:16px;margin-bottom:0;">Don't have an account? <a onclick="showSignup()">Sign up</a></div>
-
-    <div class="login-divider"><span>Demo Accounts</span></div>
-    <div class="login-demo">
-      <div class="login-demo-title">Click to autofill</div>
-      <div class="demo-account" onclick="fillDemo('student@examhub.com','student123')">
-        <div class="demo-info">
-          <div class="demo-email">student@examhub.com</div>
-          <div class="demo-role">Student</div>
-        </div>
-        <div class="demo-fill">&#8594; Fill</div>
-      </div>
-      <div class="demo-account" onclick="fillDemo('pilot@examhub.com','cpl2024')">
-        <div class="demo-info">
-          <div class="demo-email">pilot@examhub.com</div>
-          <div class="demo-role">Pilot Trainee</div>
-        </div>
-        <div class="demo-fill">&#8594; Fill</div>
-      </div>
-      <div class="demo-account" onclick="fillDemo('admin@examhub.com','admin123')" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px;">
-        <div class="demo-info">
-          <div class="demo-email">admin@examhub.com</div>
-          <div class="demo-role" style="color:var(--accent);">&#128737; Admin</div>
-        </div>
-        <div class="demo-fill">&#8594; Fill</div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -1609,14 +1573,7 @@ function togglePwVisibility(){
   else { inp.type='password'; btn.innerHTML='&#128065;'; }
 }
 
-function fillDemo(email, pw){
-  document.getElementById('loginEmail').value = email;
-  document.getElementById('loginPassword').value = pw;
-  document.getElementById('loginPassword').type = 'password';
-  document.getElementById('pwToggle').innerHTML='&#128065;';
-  clearLoginError();
-  document.getElementById('loginEmail').focus();
-}
+
 
 // ══════════ SIGNUP ══════════
 
