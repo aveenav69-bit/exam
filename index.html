@@ -335,6 +335,117 @@ input[type=number]{width:100px;}
 .signup-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 28px rgba(34,197,94,.4);}
 .signup-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
 .adm-registered{display:inline-block;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:rgba(34,197,94,.1);color:var(--correct);border:1px solid rgba(34,197,94,.25);}
+
+/* ── USER EDIT MODAL ── */
+#editUserModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:600;align-items:center;justify-content:center;padding:20px;}
+.edit-modal-box{background:var(--card);border:1px solid var(--border);border-radius:18px;width:100%;max-width:420px;padding:32px;box-shadow:0 24px 80px rgba(0,0,0,.6);animation:fadeUp .25s ease both;}
+.edit-modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;}
+.edit-modal-sub{font-size:12px;color:var(--muted);margin-bottom:24px;}
+.edit-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.edit-field label{font-size:11px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.edit-input{background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;border-radius:9px;outline:none;transition:border-color .2s;width:100%;}
+.edit-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.1);}
+.edit-pw-wrap{position:relative;}
+.edit-pw-wrap .edit-input{padding-right:40px;}
+.edit-pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;padding:2px;}
+.edit-success{display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--correct);font-size:12.5px;padding:9px 13px;border-radius:8px;margin-bottom:14px;align-items:center;gap:7px;}
+.edit-success.show{display:flex;}
+.edit-error{display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--wrong);font-size:12.5px;padding:9px 13px;border-radius:8px;margin-bottom:14px;align-items:center;gap:7px;}
+.edit-error.show{display:flex;}
+.adm-edit-btn{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.adm-edit-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-dim);}
+
+/* ══ PROFILE DRAWER ══ */
+#profileDrawer{
+  position:fixed;top:0;right:-420px;width:420px;max-width:100vw;height:100vh;
+  background:var(--card);border-left:1px solid var(--border);
+  z-index:550;overflow-y:auto;transition:right .35s cubic-bezier(.4,0,.2,1);
+  box-shadow:-20px 0 60px rgba(0,0,0,.5);
+}
+#profileDrawer.open{right:0;}
+#profileBackdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+  z-index:549;display:none;opacity:0;transition:opacity .3s ease;
+}
+#profileBackdrop.show{display:block;opacity:1;}
+
+.profile-header{
+  padding:28px 28px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--card);z-index:1;
+}
+.profile-header-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+.profile-close-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px;padding:4px 8px;border-radius:7px;transition:color .15s,background .15s;line-height:1;}
+.profile-close-btn:hover{color:var(--text);background:var(--surface);}
+
+.profile-avatar-section{
+  padding:28px;text-align:center;border-bottom:1px solid var(--border);
+}
+.profile-avatar-big{
+  width:72px;height:72px;border-radius:18px;margin:0 auto 12px;
+  background:linear-gradient(135deg,var(--blue),#1d4ed8);
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px rgba(59,130,246,.35);
+}
+.profile-display-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;}
+.profile-display-email{font-size:13px;color:var(--muted);}
+.profile-display-role{
+  display:inline-block;margin-top:8px;
+  font-family:'Syne',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 10px;border-radius:99px;
+  background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,.2);
+}
+
+.profile-section{padding:20px 28px;border-bottom:1px solid var(--border);}
+.profile-section-title{
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;
+}
+.profile-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.profile-field:last-child{margin-bottom:0;}
+.profile-field label{font-size:11px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.profile-input{
+  background:var(--surface);border:1.5px solid var(--border);color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;
+  border-radius:9px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;
+}
+.profile-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.1);}
+.profile-input.p-error{border-color:var(--wrong);}
+
+.profile-pw-wrap{position:relative;}
+.profile-pw-wrap .profile-input{padding-right:40px;}
+.profile-pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;padding:2px;transition:color .15s;}
+.profile-pw-eye:hover{color:var(--text);}
+
+.profile-msg{display:none;font-size:12.5px;padding:9px 13px;border-radius:8px;margin-bottom:14px;align-items:center;gap:7px;}
+.profile-msg.show{display:flex;}
+.profile-msg.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--correct);}
+.profile-msg.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--wrong);}
+
+.profile-save-btn{
+  width:100%;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;
+  letter-spacing:.05em;text-transform:uppercase;padding:12px;border:none;
+  border-radius:9px;cursor:pointer;background:var(--blue);color:#fff;
+  transition:all .2s;box-shadow:0 4px 14px rgba(59,130,246,.25);
+}
+.profile-save-btn:hover{background:#2563eb;transform:translateY(-1px);}
+
+.profile-footer{padding:20px 28px;}
+.profile-logout-btn{
+  width:100%;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;
+  letter-spacing:.05em;text-transform:uppercase;padding:12px;
+  border:1.5px solid rgba(239,68,68,.3);border-radius:9px;cursor:pointer;
+  background:rgba(239,68,68,.08);color:var(--wrong);
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.profile-logout-btn:hover{background:var(--wrong);color:#fff;border-color:var(--wrong);}
+
+/* Header user badge — clickable */
+.user-badge{cursor:pointer;}
+.user-badge:hover{border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.05);}
 </style>
 </head>
 <body>
@@ -444,20 +555,20 @@ input[type=number]{width:100px;}
       <div class="logo-badge">CPL</div>
       <div class="logo-title">Exam Hub</div>
       <div style="flex:1;"></div>
-      <div class="user-badge" id="userBadge">
+      <div class="user-badge" id="userBadge" onclick="openProfile()" title="View profile">
         <div class="user-avatar" id="userAvatar">?</div>
         <div>
           <div class="user-name" id="userName">—</div>
           <div class="user-role" id="userRole">—</div>
         </div>
-        <button class="logout-btn" onclick="doLogout()" title="Sign out">&#x2715;</button>
+        <span style="color:var(--muted);font-size:12px;margin-left:2px;">&#9662;</span>
       </div>
     </div>
     <div class="tab-nav" id="mainTabNav">
-      <button class="tab-btn active-practice" onclick="switchTab('practice')">
+      <button class="tab-btn active-practice" id="practiceTab" onclick="switchTab('practice')">
         <span>📘</span><span>Study Mode</span>
       </button>
-      <button class="tab-btn" onclick="switchTab('exam')">
+      <button class="tab-btn" id="examTab" onclick="switchTab('exam')">
         <span>✈️</span><span>Mock Exam</span>
       </button>
       <button class="tab-btn hidden" id="adminTab" onclick="switchTab('admin')">
@@ -670,6 +781,34 @@ input[type=number]{width:100px;}
       <div class="section-tag" style="background:rgba(240,165,0,.1);color:var(--accent);border:1px solid rgba(240,165,0,.2);">Admin</div>
       <div class="section-title">Admin Dashboard</div>
       <div class="section-sub">Monitor user activity and login history.</div>
+    </div>
+
+    <!-- Admin Credentials Card -->
+    <div class="config-card" style="margin-bottom:20px;border-color:rgba(240,165,0,.25);background:linear-gradient(135deg,rgba(240,165,0,.04),transparent);">
+      <h3 style="margin-bottom:18px;">&#128273; Admin Login Credentials</h3>
+      <div id="admCredMsg" style="display:none;font-size:12.5px;padding:9px 13px;border-radius:8px;margin-bottom:14px;align-items:center;gap:7px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <label style="font-size:11px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">New Email</label>
+          <input class="login-input" type="email" id="admNewEmail" placeholder="admin@examhub.com" style="font-size:13px;padding:10px 13px;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <label style="font-size:11px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">Current Password</label>
+          <input class="login-input" type="password" id="admCurPassword" placeholder="Verify current password" style="font-size:13px;padding:10px 13px;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <label style="font-size:11px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">New Password</label>
+          <input class="login-input" type="password" id="admNewPassword" placeholder="Leave blank to keep current" style="font-size:13px;padding:10px 13px;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <label style="font-size:11px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">Confirm New Password</label>
+          <input class="login-input" type="password" id="admConfirmPassword" placeholder="Confirm new password" style="font-size:13px;padding:10px 13px;">
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div style="font-size:12px;color:var(--muted);flex:1;">Current email: <span id="admCurrentEmail" style="color:var(--text);font-weight:500;">admin@examhub.com</span></div>
+        <button class="btn btn-exam btn-sm" onclick="saveAdminCredentials()" style="padding:9px 22px;">Save Credentials</button>
+      </div>
     </div>
 
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
@@ -1305,8 +1444,14 @@ document.getElementById('reviewModal').addEventListener('click',function(e){
 });
 
 // ══════════ AUTH + PERSISTENCE ══════════
-const ADMIN_EMAIL = 'admin@examhub.com';
-const ADMIN_PASSWORD = 'admin123';
+let ADMIN_EMAIL = 'admin@examhub.com';
+let ADMIN_PASSWORD = 'admin123';
+
+// Load overridden admin credentials from LS if set
+(function(){
+  const saved = localStorage.getItem('examhub_admin_creds');
+  if(saved){ try{ const c=JSON.parse(saved); ADMIN_EMAIL=c.email||ADMIN_EMAIL; ADMIN_PASSWORD=c.password||ADMIN_PASSWORD; }catch(e){} }
+})();
 const DEMO_USERS = [
   {email:'student@examhub.com', password:'student123', name:'Student', role:'Student'},
   {email:'pilot@examhub.com',   password:'cpl2024',    name:'Pilot Trainee', role:'Pilot Trainee'},
@@ -1445,9 +1590,11 @@ function loginSuccess(name, role, email){
   document.getElementById('userRole').textContent = role;
   document.getElementById('userBadge').classList.add('show');
 
-  // Show/hide admin tab
+  // Show/hide tabs based on role
   const isAdmin = role === 'Admin';
   document.getElementById('adminTab').classList.toggle('hidden', !isAdmin);
+  document.getElementById('practiceTab').classList.toggle('hidden', isAdmin);
+  document.getElementById('examTab').classList.toggle('hidden', isAdmin);
 
   if(!isAdmin){
     // Load persisted exam history
@@ -1487,6 +1634,8 @@ function restoreSession(){
 
   const isAdmin = saved.role === 'Admin';
   document.getElementById('adminTab').classList.toggle('hidden', !isAdmin);
+  document.getElementById('practiceTab').classList.toggle('hidden', isAdmin);
+  document.getElementById('examTab').classList.toggle('hidden', isAdmin);
 
   if(!isAdmin){
     examHistory = loadExamHistoryFromLS();
@@ -1508,6 +1657,8 @@ function doLogout(){
 
   // Hide admin tab & reset to practice
   document.getElementById('adminTab').classList.add('hidden');
+  document.getElementById('practiceTab').classList.remove('hidden');
+  document.getElementById('examTab').classList.remove('hidden');
   switchTab('practice');
 
   document.getElementById('userBadge').classList.remove('show');
@@ -1524,6 +1675,7 @@ function doLogout(){
 
 // ── Admin dashboard ──
 function renderAdminDashboard(){
+  populateAdminCredCard();
   const log = getLoginLog();
   const unique = new Set(log.map(e=>e.email)).size;
   const active = log.filter(e=>e.logoutTime===null).length;
@@ -1554,6 +1706,80 @@ function clearAdminLog(){
   if(!confirm('Clear all login activity logs?')) return;
   saveLoginLog([]);
   renderAdminDashboard();
+}
+
+
+// ── Admin credential management ──
+function populateAdminCredCard(){
+  const el = document.getElementById('admCurrentEmail');
+  if(el) el.textContent = ADMIN_EMAIL;
+  const emailInput = document.getElementById('admNewEmail');
+  if(emailInput) emailInput.value = ADMIN_EMAIL;
+  const fields = ['admCurPassword','admNewPassword','admConfirmPassword'];
+  fields.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  hideAdmCredMsg();
+}
+
+function showAdmCredMsg(msg, type){
+  const el = document.getElementById('admCredMsg');
+  if(!el) return;
+  el.style.display = 'flex';
+  el.style.background = type==='success' ? 'rgba(34,197,94,.1)' : 'rgba(239,68,68,.1)';
+  el.style.border = type==='success' ? '1px solid rgba(34,197,94,.25)' : '1px solid rgba(239,68,68,.25)';
+  el.style.color = type==='success' ? 'var(--correct)' : 'var(--wrong)';
+  el.innerHTML = (type==='success' ? '&#10003; ' : '&#10007; ') + msg;
+}
+function hideAdmCredMsg(){
+  const el = document.getElementById('admCredMsg');
+  if(el) el.style.display = 'none';
+}
+
+function saveAdminCredentials(){
+  const newEmail   = (document.getElementById('admNewEmail').value || '').trim().toLowerCase();
+  const curPw      = document.getElementById('admCurPassword').value;
+  const newPw      = document.getElementById('admNewPassword').value;
+  const confirmPw  = document.getElementById('admConfirmPassword').value;
+
+  hideAdmCredMsg();
+
+  // Validate current password
+  if(!curPw) return showAdmCredMsg('Please enter your current password to confirm changes.', 'error');
+  if(curPw !== ADMIN_PASSWORD) return showAdmCredMsg('Current password is incorrect.', 'error');
+
+  // Validate email
+  if(!newEmail || !/^[^@]+@[^@]+\.[^@]+$/.test(newEmail)){
+    return showAdmCredMsg('Please enter a valid email address.', 'error');
+  }
+
+  // Validate new password if provided
+  if(newPw){
+    if(newPw.length < 6) return showAdmCredMsg('New password must be at least 6 characters.', 'error');
+    if(newPw !== confirmPw) return showAdmCredMsg('New passwords do not match.', 'error');
+  }
+
+  // Apply changes
+  const oldEmail = ADMIN_EMAIL;
+  ADMIN_EMAIL = newEmail;
+  if(newPw) ADMIN_PASSWORD = newPw;
+
+  // Persist to localStorage
+  try { localStorage.setItem('examhub_admin_creds', JSON.stringify({email:ADMIN_EMAIL, password:ADMIN_PASSWORD})); } catch(e){}
+
+  // Update current session if email changed
+  if(currentUser && currentUser.email === oldEmail){
+    currentUser.email = ADMIN_EMAIL;
+    saveToLS('examhub_current_user', {name:currentUser.name, role:'Admin', email:ADMIN_EMAIL, sessionId:currentSessionId});
+    document.getElementById('userName').textContent = 'Admin';
+  }
+
+  // Refresh display
+  document.getElementById('admCurrentEmail').textContent = ADMIN_EMAIL;
+  document.getElementById('admNewEmail').value = ADMIN_EMAIL;
+  document.getElementById('admCurPassword').value = '';
+  document.getElementById('admNewPassword').value = '';
+  document.getElementById('admConfirmPassword').value = '';
+
+  showAdmCredMsg(newPw ? 'Email and password updated successfully.' : 'Email updated successfully.', 'success');
 }
 
 // ── Patch switchTab to refresh admin when opened ──
@@ -1819,7 +2045,7 @@ renderAdminDashboard = function(){
       : '<span style="font-size:11px;color:var(--muted);">Demo / Admin</span>';
   });
 
-  // Add registered users section if not already shown
+  // Registered users section
   let regSection = document.getElementById('adm-regSection');
   if(!regSection){
     const adminPanel = document.getElementById('panel-admin');
@@ -1835,6 +2061,7 @@ renderAdminDashboard = function(){
     regSection.innerHTML = '<div style="padding:20px 24px;font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);">Registered Users</div><div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">No registered users yet.</div>';
     return;
   }
+  const TH = (t)=>`<th style="text-align:left;padding:10px 16px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">${t}</th>`;
   regSection.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);">
       <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Registered Users (${users.length})</div>
@@ -1843,21 +2070,20 @@ renderAdminDashboard = function(){
       <table style="width:100%;border-collapse:collapse;font-size:13px;">
         <thead>
           <tr style="border-bottom:1px solid var(--border);">
-            <th style="text-align:left;padding:10px 20px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">#</th>
-            <th style="text-align:left;padding:10px 16px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Name</th>
-            <th style="text-align:left;padding:10px 16px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Email</th>
-            <th style="text-align:left;padding:10px 16px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Role</th>
-            <th style="text-align:left;padding:10px 16px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Registered</th>
+            ${TH('#')}${TH('Name')}${TH('Email')}${TH('Role')}${TH('Registered')}${TH('Actions')}
           </tr>
         </thead>
         <tbody>
           ${users.map((u,i)=>`
-            <tr style="border-bottom:1px solid var(--border);">
+            <tr style="border-bottom:1px solid var(--border);" id="adm-urow-${i}">
               <td style="padding:11px 20px;color:var(--muted);font-family:'Syne',sans-serif;font-size:11px;">${i+1}</td>
               <td style="padding:11px 16px;"><strong>${u.name}</strong></td>
-              <td style="padding:11px 16px;color:var(--muted);">${u.email}</td>
-              <td style="padding:11px 16px;"><span class="adm-role-badge">${u.role}</span></td>
+              <td style="padding:11px 16px;color:var(--muted);font-size:12px;">${u.email}</td>
+              <td style="padding:11px 16px;" id="adm-role-cell-${i}"><span class="adm-role-badge">${u.role}</span></td>
               <td style="padding:11px 16px;color:var(--muted);font-size:12px;">${u.registeredAt||'—'}</td>
+              <td style="padding:11px 16px;">
+                <button class="adm-edit-btn" onclick="openEditModal(${i})">&#9998; Edit</button>
+              </td>
             </tr>
           `).join('')}
         </tbody>
@@ -1866,8 +2092,475 @@ renderAdminDashboard = function(){
   `;
 };
 
+// ── Edit modal state ──
+let editTargetIdx = -1;
+
+function openEditModal(idx){
+  const users = getRegisteredUsers();
+  const u = users[idx];
+  if(!u) return;
+  editTargetIdx = idx;
+  document.getElementById('editUserSubtitle').textContent = u.name + ' · ' + u.email;
+  document.getElementById('editRole').value = u.role;
+  document.getElementById('editNewPw').value = '';
+  document.getElementById('editConfirmPw').value = '';
+  document.getElementById('editNewPw').type = 'password';
+  document.getElementById('editConfirmPw').type = 'password';
+  document.getElementById('editPwBtn1').innerHTML = '&#128065;';
+  document.getElementById('editPwBtn2').innerHTML = '&#128065;';
+  document.getElementById('editSuccess').classList.remove('show');
+  document.getElementById('editError').classList.remove('show');
+  const modal = document.getElementById('editUserModal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(()=>{ modal.style.opacity='1'; });
+}
+
+function closeEditModal(){
+  document.getElementById('editUserModal').style.display = 'none';
+  editTargetIdx = -1;
+}
+
+function toggleEditPw(inputId, btnId){
+  const inp = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if(inp.type==='password'){ inp.type='text'; btn.innerHTML='&#128584;'; }
+  else { inp.type='password'; btn.innerHTML='&#128065;'; }
+}
+
+function saveUserEdits(){
+  if(editTargetIdx < 0) return;
+  const users = getRegisteredUsers();
+  const u = users[editTargetIdx];
+  if(!u) return;
+
+  const newRole = document.getElementById('editRole').value;
+  const newPw   = document.getElementById('editNewPw').value;
+  const confPw  = document.getElementById('editConfirmPw').value;
+
+  document.getElementById('editError').classList.remove('show');
+  document.getElementById('editSuccess').classList.remove('show');
+
+  // Validate password if provided
+  if(newPw){
+    if(newPw.length < 6){
+      document.getElementById('editErrorMsg').textContent = 'Password must be at least 6 characters.';
+      document.getElementById('editError').classList.add('show');
+      return;
+    }
+    if(newPw !== confPw){
+      document.getElementById('editErrorMsg').textContent = 'Passwords do not match.';
+      document.getElementById('editError').classList.add('show');
+      return;
+    }
+  }
+
+  // Apply changes
+  u.role = newRole;
+  if(newPw) u.password = newPw;
+  users[editTargetIdx] = u;
+  saveRegisteredUsers(users);
+
+  // Show success
+  const msg = newPw ? 'Role and password updated.' : 'Role updated successfully.';
+  document.getElementById('editSuccessMsg').textContent = msg;
+  document.getElementById('editSuccess').classList.add('show');
+
+  // Refresh dashboard after short delay
+  setTimeout(()=>{
+    closeEditModal();
+    renderAdminDashboard();
+  }, 1000);
+}
+
+// Close edit modal on backdrop click
+document.getElementById('editUserModal').addEventListener('click', function(e){
+  if(e.target === this) closeEditModal();
+});
+
+
+// ══════════ PROFILE ══════════
+
+function openProfile(){
+  if(!currentUser) return;
+  const isAdmin = currentUser.role === 'Admin';
+
+  // Populate avatar section
+  const name = currentUser.name;
+  document.getElementById('profileAvatarBig').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('profileDisplayName').textContent = name;
+  document.getElementById('profileDisplayEmail').textContent = currentUser.email;
+  document.getElementById('profileDisplayRole').textContent = currentUser.role;
+
+  // Populate info fields
+  const parts = name.split(' ');
+  document.getElementById('profileFirst').value = parts[0] || '';
+  document.getElementById('profileLast').value = parts.slice(1).join(' ') || '';
+  document.getElementById('profileEmail').value = currentUser.email;
+
+  // Clear password fields & messages
+  ['profileCurPw','profileNewPw','profileConfirmPw'].forEach(id=>{
+    document.getElementById(id).value = '';
+    document.getElementById(id).type = 'password';
+  });
+  ['profileEye0','profileEye1','profileEye2'].forEach(id=>{
+    document.getElementById(id).innerHTML = '&#128065;';
+  });
+  hideProfileMsg('profileInfoMsg');
+  hideProfileMsg('profilePwMsg');
+
+  // Toggle admin vs regular sections
+  document.getElementById('profileRegularSections').classList.toggle('hidden', isAdmin);
+  document.getElementById('profileAdminSection').classList.toggle('hidden', !isAdmin);
+
+  if(isAdmin){
+    // Pre-fill admin email
+    document.getElementById('profileAdminEmail').value = ADMIN_EMAIL;
+    ['profileAdminCurPw','profileAdminNewPw','profileAdminConfirmPw'].forEach(id=>{
+      document.getElementById(id).value='';
+      document.getElementById(id).type='password';
+    });
+    ['profileAdmEye0','profileAdmEye1','profileAdmEye2'].forEach(id=>{
+      document.getElementById(id).innerHTML='&#128065;';
+    });
+    hideProfileMsg('profileAdminMsg');
+  }
+
+  // Open drawer
+  document.getElementById('profileDrawer').classList.add('open');
+  const backdrop = document.getElementById('profileBackdrop');
+  backdrop.style.display = 'block';
+  requestAnimationFrame(()=>backdrop.classList.add('show'));
+}
+
+function closeProfile(){
+  document.getElementById('profileDrawer').classList.remove('open');
+  const backdrop = document.getElementById('profileBackdrop');
+  backdrop.classList.remove('show');
+  setTimeout(()=>{ backdrop.style.display='none'; }, 300);
+}
+
+function toggleProfilePw(inputId, btnId){
+  const inp = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if(inp.type==='password'){ inp.type='text'; btn.innerHTML='&#128584;'; }
+  else { inp.type='password'; btn.innerHTML='&#128065;'; }
+}
+
+function showProfileMsg(id, msg, type){
+  const el = document.getElementById(id);
+  el.className = 'profile-msg show ' + type;
+  el.innerHTML = (type==='success' ? '&#10003; ' : '&#10007; ') + msg;
+}
+function hideProfileMsg(id){
+  document.getElementById(id).className = 'profile-msg';
+}
+
+
+function saveAdminProfileCredentials(){
+  const newEmail  = (document.getElementById('profileAdminEmail').value || '').trim().toLowerCase();
+  const curPw     = document.getElementById('profileAdminCurPw').value;
+  const newPw     = document.getElementById('profileAdminNewPw').value;
+  const confirmPw = document.getElementById('profileAdminConfirmPw').value;
+
+  hideProfileMsg('profileAdminMsg');
+
+  if(!curPw) return showProfileMsg('profileAdminMsg','Please enter your current password to confirm changes.','error');
+  if(curPw !== ADMIN_PASSWORD) return showProfileMsg('profileAdminMsg','Current password is incorrect.','error');
+  if(!newEmail || !/^[^@]+@[^@]+\.[^@]+$/.test(newEmail))
+    return showProfileMsg('profileAdminMsg','Please enter a valid email address.','error');
+  if(newPw){
+    if(newPw.length < 6) return showProfileMsg('profileAdminMsg','New password must be at least 6 characters.','error');
+    if(newPw !== confirmPw) return showProfileMsg('profileAdminMsg','New passwords do not match.','error');
+  }
+
+  const oldEmail = ADMIN_EMAIL;
+  ADMIN_EMAIL = newEmail;
+  if(newPw) ADMIN_PASSWORD = newPw;
+
+  // Persist
+  try{ localStorage.setItem('examhub_admin_creds', JSON.stringify({email:ADMIN_EMAIL, password:ADMIN_PASSWORD})); }catch(e){}
+
+  // Update current session
+  if(currentUser){
+    currentUser.email = ADMIN_EMAIL;
+    saveToLS('examhub_current_user', {name:currentUser.name, role:'Admin', email:ADMIN_EMAIL, sessionId:currentSessionId});
+  }
+
+  // Update header & drawer display
+  document.getElementById('profileDisplayEmail').textContent = ADMIN_EMAIL;
+  document.getElementById('userRole').textContent = 'Admin';
+
+  // Clear sensitive fields
+  ['profileAdminCurPw','profileAdminNewPw','profileAdminConfirmPw'].forEach(id=>{
+    document.getElementById(id).value='';
+    document.getElementById(id).type='password';
+  });
+  ['profileAdmEye0','profileAdmEye1','profileAdmEye2'].forEach(id=>{
+    document.getElementById(id).innerHTML='&#128065;';
+  });
+
+  // Sync admin panel credential card if visible
+  const admEmailEl = document.getElementById('admCurrentEmail');
+  if(admEmailEl) admEmailEl.textContent = ADMIN_EMAIL;
+
+  showProfileMsg('profileAdminMsg', newPw ? 'Email and password updated.' : 'Email updated successfully.', 'success');
+}
+
+function saveProfileInfo(){
+  const first = document.getElementById('profileFirst').value.trim();
+  const last  = document.getElementById('profileLast').value.trim();
+  const email = document.getElementById('profileEmail').value.trim().toLowerCase();
+
+  if(!first) return showProfileMsg('profileInfoMsg','First name is required.','error');
+  if(!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) return showProfileMsg('profileInfoMsg','Please enter a valid email.','error');
+
+  const newName = last ? first + ' ' + last : first;
+
+  // Check email isn't taken by another user
+  const users = getRegisteredUsers();
+  const dupIdx = users.findIndex(u=>u.email===email && u.email!==currentUser.email);
+  if(dupIdx >= 0) return showProfileMsg('profileInfoMsg','That email is already in use by another account.','error');
+
+  // Update in registered users DB
+  const idx = users.findIndex(u=>u.email===currentUser.email);
+  if(idx >= 0){
+    users[idx].name = newName;
+    users[idx].firstName = first;
+    users[idx].lastName = last;
+    users[idx].email = email;
+    saveRegisteredUsers(users);
+  }
+
+  // Update currentUser
+  const oldEmail = currentUser.email;
+  currentUser.name = newName;
+  currentUser.email = email;
+
+  // Migrate LS keys if email changed
+  if(email !== oldEmail){
+    const practice = loadFromLS(lsKey(oldEmail,'practice'));
+    const history  = loadFromLS(lsKey(oldEmail,'examhistory'));
+    if(practice) saveToLS(lsKey(email,'practice'), practice);
+    if(history)  saveToLS(lsKey(email,'examhistory'), history);
+    removeFromLS(lsKey(oldEmail,'practice'));
+    removeFromLS(lsKey(oldEmail,'examhistory'));
+  }
+
+  // Persist updated session
+  saveToLS('examhub_current_user', {name:newName, role:currentUser.role, email, sessionId:currentSessionId});
+
+  // Refresh header badge
+  document.getElementById('userAvatar').textContent = newName.charAt(0).toUpperCase();
+  document.getElementById('userName').textContent = newName;
+
+  // Refresh drawer avatar section
+  document.getElementById('profileAvatarBig').textContent = newName.charAt(0).toUpperCase();
+  document.getElementById('profileDisplayName').textContent = newName;
+  document.getElementById('profileDisplayEmail').textContent = email;
+
+  showProfileMsg('profileInfoMsg','Profile updated successfully.','success');
+}
+
+function saveProfilePassword(){
+  const curPw  = document.getElementById('profileCurPw').value;
+  const newPw  = document.getElementById('profileNewPw').value;
+  const confPw = document.getElementById('profileConfirmPw').value;
+
+  hideProfileMsg('profilePwMsg');
+
+  if(!curPw) return showProfileMsg('profilePwMsg','Please enter your current password.','error');
+  if(!newPw) return showProfileMsg('profilePwMsg','Please enter a new password.','error');
+  if(newPw.length < 6) return showProfileMsg('profilePwMsg','New password must be at least 6 characters.','error');
+  if(newPw !== confPw) return showProfileMsg('profilePwMsg','New passwords do not match.','error');
+
+  // Verify current password against registered users
+  const users = getRegisteredUsers();
+  const idx = users.findIndex(u=>u.email===currentUser.email);
+  if(idx < 0) return showProfileMsg('profilePwMsg','Account not found in database.','error');
+  if(users[idx].password !== curPw) return showProfileMsg('profilePwMsg','Current password is incorrect.','error');
+
+  // Update password
+  users[idx].password = newPw;
+  saveRegisteredUsers(users);
+
+  // Clear fields
+  ['profileCurPw','profileNewPw','profileConfirmPw'].forEach(id=>{
+    document.getElementById(id).value='';
+    document.getElementById(id).type='password';
+  });
+  ['profileEye0','profileEye1','profileEye2'].forEach(id=>{
+    document.getElementById(id).innerHTML='&#128065;';
+  });
+
+  showProfileMsg('profilePwMsg','Password changed successfully.','success');
+}
+
 // Restore session on page load (survives refresh)
 restoreSession();
 </script>
+
+<!-- USER EDIT MODAL -->
+<div id="editUserModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:600;align-items:center;justify-content:center;padding:20px;">
+  <div class="edit-modal-box">
+    <div class="edit-modal-title">Edit User</div>
+    <div class="edit-modal-sub" id="editUserSubtitle">—</div>
+
+    <div class="edit-success" id="editSuccess"><span>&#10003;</span><span id="editSuccessMsg">Changes saved.</span></div>
+    <div class="edit-error" id="editError"><span>&#10007;</span><span id="editErrorMsg">Something went wrong.</span></div>
+
+    <div class="edit-field">
+      <label>Role</label>
+      <select class="edit-input" id="editRole">
+        <option value="Student">Student</option>
+        <option value="Pilot Trainee">Pilot Trainee</option>
+        <option value="Instructor">Instructor</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin:18px 0;"></div>
+    <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">Change Password</div>
+
+    <div class="edit-field">
+      <label>New Password <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(leave blank to keep current)</span></label>
+      <div class="edit-pw-wrap">
+        <input class="edit-input" type="password" id="editNewPw" placeholder="New password">
+        <button class="edit-pw-toggle" onclick="toggleEditPw('editNewPw','editPwBtn1')" id="editPwBtn1">&#128065;</button>
+      </div>
+    </div>
+    <div class="edit-field">
+      <label>Confirm New Password</label>
+      <div class="edit-pw-wrap">
+        <input class="edit-input" type="password" id="editConfirmPw" placeholder="Confirm new password">
+        <button class="edit-pw-toggle" onclick="toggleEditPw('editConfirmPw','editPwBtn2')" id="editPwBtn2">&#128065;</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+      <button class="btn btn-ghost btn-sm" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-practice btn-sm" onclick="saveUserEdits()" style="padding:9px 22px;">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PROFILE BACKDROP -->
+<div id="profileBackdrop" onclick="closeProfile()"></div>
+
+<!-- PROFILE DRAWER -->
+<div id="profileDrawer">
+  <div class="profile-header">
+    <div class="profile-header-title">My Profile</div>
+    <button class="profile-close-btn" onclick="closeProfile()">&#10005;</button>
+  </div>
+
+  <!-- Avatar + display info -->
+  <div class="profile-avatar-section">
+    <div class="profile-avatar-big" id="profileAvatarBig">?</div>
+    <div class="profile-display-name" id="profileDisplayName">—</div>
+    <div class="profile-display-email" id="profileDisplayEmail">—</div>
+    <div class="profile-display-role" id="profileDisplayRole">—</div>
+  </div>
+
+  <!-- Regular user sections (hidden for admin) -->
+  <div id="profileRegularSections">
+    <!-- Edit profile info -->
+    <div class="profile-section">
+      <div class="profile-section-title">Personal Information</div>
+      <div class="profile-msg" id="profileInfoMsg"></div>
+      <div class="profile-field">
+        <label>First Name</label>
+        <input class="profile-input" type="text" id="profileFirst" placeholder="First name">
+      </div>
+      <div class="profile-field">
+        <label>Last Name</label>
+        <input class="profile-input" type="text" id="profileLast" placeholder="Last name">
+      </div>
+      <div class="profile-field">
+        <label>Email Address</label>
+        <input class="profile-input" type="email" id="profileEmail" placeholder="Email address">
+      </div>
+      <div style="margin-top:16px;">
+        <button class="profile-save-btn" onclick="saveProfileInfo()">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Change password -->
+    <div class="profile-section">
+      <div class="profile-section-title">Change Password</div>
+      <div class="profile-msg" id="profilePwMsg"></div>
+      <div class="profile-field">
+        <label>Current Password</label>
+        <div class="profile-pw-wrap">
+          <input class="profile-input" type="password" id="profileCurPw" placeholder="Current password">
+          <button class="profile-pw-eye" onclick="toggleProfilePw('profileCurPw','profileEye0')" id="profileEye0">&#128065;</button>
+        </div>
+      </div>
+      <div class="profile-field">
+        <label>New Password</label>
+        <div class="profile-pw-wrap">
+          <input class="profile-input" type="password" id="profileNewPw" placeholder="Min. 6 characters">
+          <button class="profile-pw-eye" onclick="toggleProfilePw('profileNewPw','profileEye1')" id="profileEye1">&#128065;</button>
+        </div>
+      </div>
+      <div class="profile-field">
+        <label>Confirm New Password</label>
+        <div class="profile-pw-wrap">
+          <input class="profile-input" type="password" id="profileConfirmPw" placeholder="Confirm new password">
+          <button class="profile-pw-eye" onclick="toggleProfilePw('profileConfirmPw','profileEye2')" id="profileEye2">&#128065;</button>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="profile-save-btn" onclick="saveProfilePassword()" style="background:linear-gradient(135deg,#16a34a,var(--correct));">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin credentials section (hidden for regular users) -->
+  <div id="profileAdminSection" class="hidden">
+    <div class="profile-section">
+      <div class="profile-section-title">&#128273; Admin Credentials</div>
+      <div class="profile-msg" id="profileAdminMsg"></div>
+      <div class="profile-field">
+        <label>Login Email</label>
+        <input class="profile-input" type="email" id="profileAdminEmail" placeholder="admin@examhub.com">
+      </div>
+      <div style="height:1px;background:var(--border);margin:14px 0 18px;"></div>
+      <div class="profile-section-title" style="margin-bottom:14px;">Change Password</div>
+      <div class="profile-field">
+        <label>Current Password <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(required)</span></label>
+        <div class="profile-pw-wrap">
+          <input class="profile-input" type="password" id="profileAdminCurPw" placeholder="Current password">
+          <button class="profile-pw-eye" onclick="toggleProfilePw('profileAdminCurPw','profileAdmEye0')" id="profileAdmEye0">&#128065;</button>
+        </div>
+      </div>
+      <div class="profile-field">
+        <label>New Password <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(leave blank to keep)</span></label>
+        <div class="profile-pw-wrap">
+          <input class="profile-input" type="password" id="profileAdminNewPw" placeholder="Min. 6 characters">
+          <button class="profile-pw-eye" onclick="toggleProfilePw('profileAdminNewPw','profileAdmEye1')" id="profileAdmEye1">&#128065;</button>
+        </div>
+      </div>
+      <div class="profile-field">
+        <label>Confirm New Password</label>
+        <div class="profile-pw-wrap">
+          <input class="profile-input" type="password" id="profileAdminConfirmPw" placeholder="Confirm new password">
+          <button class="profile-pw-eye" onclick="toggleProfilePw('profileAdminConfirmPw','profileAdmEye2')" id="profileAdmEye2">&#128065;</button>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="profile-save-btn" onclick="saveAdminProfileCredentials()">Save Credentials</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout -->
+  <div class="profile-footer">
+    <button class="profile-logout-btn" onclick="doLogout()">
+      <span>&#9654;</span> Sign Out
+    </button>
+  </div>
+</div>
+
 </body>
 </html>
