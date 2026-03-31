@@ -1430,6 +1430,9 @@ function loginSuccess(name, role, email){
   currentUser = {name, role, email};
   currentSessionId = recordLogin(currentUser);
 
+  // Persist logged-in user so page refresh doesn't log out
+  saveToLS('examhub_current_user', {name, role, email, sessionId: currentSessionId});
+
   // Fade out login screen
   const ls = document.getElementById('loginScreen');
   ls.style.transition = 'opacity .35s ease';
@@ -1466,9 +1469,42 @@ function loginSuccess(name, role, email){
   }
 }
 
+// Restore session on page load — called at the bottom of the script
+function restoreSession(){
+  const saved = loadFromLS('examhub_current_user');
+  if(!saved) return; // no saved session, show login normally
+  currentUser = {name: saved.name, role: saved.role, email: saved.email};
+  currentSessionId = saved.sessionId || null;
+
+  // Hide login screen immediately (no fade needed on reload)
+  document.getElementById('loginScreen').style.display = 'none';
+
+  // Header badge
+  document.getElementById('userAvatar').textContent = saved.name.charAt(0).toUpperCase();
+  document.getElementById('userName').textContent = saved.name;
+  document.getElementById('userRole').textContent = saved.role;
+  document.getElementById('userBadge').classList.add('show');
+
+  const isAdmin = saved.role === 'Admin';
+  document.getElementById('adminTab').classList.toggle('hidden', !isAdmin);
+
+  if(!isAdmin){
+    examHistory = loadExamHistoryFromLS();
+    const practice = loadPracticeFromLS();
+    if(practice){ savedSession = practice; loadResumeCard(); }
+    renderHistory(false);
+  } else {
+    switchTab('admin');
+    renderAdminDashboard();
+  }
+}
+
 function doLogout(){
   if(currentSessionId) recordLogout(currentSessionId);
   currentUser = null; currentSessionId = null;
+
+  // Remove persisted session so refresh goes back to login
+  removeFromLS('examhub_current_user');
 
   // Hide admin tab & reset to practice
   document.getElementById('adminTab').classList.add('hidden');
@@ -1830,6 +1866,8 @@ renderAdminDashboard = function(){
   `;
 };
 
+// Restore session on page load (survives refresh)
+restoreSession();
 </script>
 </body>
 </html>
