@@ -2010,6 +2010,7 @@ function openEditModal(idx){
   if(!u) return;
   editTargetIdx = idx;
   document.getElementById('editUserSubtitle').textContent = u.name + ' · ' + u.email;
+  document.getElementById('editEmail').value = u.email;
   document.getElementById('editRole').value = u.role;
   document.getElementById('editNewPw').value = '';
   document.getElementById('editConfirmPw').value = '';
@@ -2042,12 +2043,27 @@ function saveUserEdits(){
   const u = users[editTargetIdx];
   if(!u) return;
 
-  const newRole = document.getElementById('editRole').value;
-  const newPw   = document.getElementById('editNewPw').value;
-  const confPw  = document.getElementById('editConfirmPw').value;
+  const newEmail = document.getElementById('editEmail').value.trim().toLowerCase();
+  const newRole  = document.getElementById('editRole').value;
+  const newPw    = document.getElementById('editNewPw').value;
+  const confPw   = document.getElementById('editConfirmPw').value;
 
   document.getElementById('editError').classList.remove('show');
   document.getElementById('editSuccess').classList.remove('show');
+
+  // Validate email
+  if(!newEmail || !/^[^@]+@[^@]+\.[^@]+$/.test(newEmail)){
+    document.getElementById('editErrorMsg').textContent = 'Please enter a valid email address.';
+    document.getElementById('editError').classList.add('show');
+    return;
+  }
+  // Check email not taken by another user
+  const dup = users.find((x, i) => i !== editTargetIdx && x.email === newEmail);
+  if(dup){
+    document.getElementById('editErrorMsg').textContent = 'That email is already used by another account.';
+    document.getElementById('editError').classList.add('show');
+    return;
+  }
 
   // Validate password if provided
   if(newPw){
@@ -2063,15 +2079,30 @@ function saveUserEdits(){
     }
   }
 
+  // Migrate LS data if email changed
+  const oldEmail = u.email;
+  if(newEmail !== oldEmail){
+    const practice = loadFromLS(lsKey(oldEmail,'practice'));
+    const history  = loadFromLS(lsKey(oldEmail,'examhistory'));
+    if(practice) saveToLS(lsKey(newEmail,'practice'), practice);
+    if(history)  saveToLS(lsKey(newEmail,'examhistory'), history);
+    removeFromLS(lsKey(oldEmail,'practice'));
+    removeFromLS(lsKey(oldEmail,'examhistory'));
+  }
+
   // Apply changes
-  u.role = newRole;
+  u.email = newEmail;
+  u.role  = newRole;
   if(newPw) u.password = newPw;
   users[editTargetIdx] = u;
   saveRegisteredUsers(users);
 
-  // Show success
-  const msg = newPw ? 'Role and password updated.' : 'Role updated successfully.';
-  document.getElementById('editSuccessMsg').textContent = msg;
+  // Build success message
+  const changes = [];
+  if(newEmail !== oldEmail) changes.push('email');
+  changes.push('role');
+  if(newPw) changes.push('password');
+  document.getElementById('editSuccessMsg').textContent = changes.join(', ').replace(/,([^,]*)$/, ' and$1') + ' updated.';
   document.getElementById('editSuccess').classList.add('show');
 
   // Refresh dashboard after short delay
@@ -2316,6 +2347,11 @@ restoreSession();
 
     <div class="edit-success" id="editSuccess"><span>&#10003;</span><span id="editSuccessMsg">Changes saved.</span></div>
     <div class="edit-error" id="editError"><span>&#10007;</span><span id="editErrorMsg">Something went wrong.</span></div>
+
+    <div class="edit-field">
+      <label>Email Address</label>
+      <input class="edit-input" type="email" id="editEmail" placeholder="user@example.com">
+    </div>
 
     <div class="edit-field">
       <label>Role</label>
