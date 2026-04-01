@@ -450,7 +450,7 @@ input[type=number]{width:100px;}
 </head>
 <body>
 
-<div id="loginScreen">
+<div id="loginScreen" style="display:none;">
   <div class="login-box">
     <div class="login-logo">
       <div class="login-badge">CPL</div>
@@ -1591,11 +1591,15 @@ function loginSuccess(name, role, email){
 // Restore session on page load — called at the bottom of the script
 function restoreSession(){
   const saved = loadFromLS('examhub_current_user');
-  if(!saved) return; // no saved session, show login normally
+  if(!saved){
+    // No saved session — show login screen
+    document.getElementById('loginScreen').style.display = 'flex';
+    return;
+  }
   currentUser = {name: saved.name, role: saved.role, email: saved.email};
   currentSessionId = saved.sessionId || null;
 
-  // Hide login screen immediately (no fade needed on reload)
+  // Session found — keep login hidden, show the app
   document.getElementById('loginScreen').style.display = 'none';
 
   // Header badge
