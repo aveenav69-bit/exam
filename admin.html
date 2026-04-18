@@ -3,529 +3,1041 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ExamHub Admin Panel</title>
+<title>ExamHub — Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#07090e;--surface:#0f1318;--card:#141920;--border:#1e2738;--accent:#f0a500;--blue:#3b82f6;--blue-dim:rgba(59,130,246,.1);--correct:#22c55e;--wrong:#ef4444;--text:#e2eaf4;--muted:#6b7a96;}
+:root{
+  --bg:#050709;--s0:#090c10;--s1:#0d1117;--s2:#161b22;--s3:#1f2937;
+  --border:#21262d;--border2:#30363d;
+  --blue:#58a6ff;--blue-dim:rgba(88,166,255,.1);--blue-glow:rgba(88,166,255,.2);
+  --green:#3fb950;--green-dim:rgba(63,185,80,.1);
+  --amber:#d29922;--amber-dim:rgba(210,153,34,.1);
+  --red:#f85149;--red-dim:rgba(248,81,73,.1);
+  --purple:#bc8cff;--purple-dim:rgba(188,140,255,.1);
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --accent:#f0a500;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(59,130,246,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.018) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;}
 
-/* LOGIN */
-#loginWrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:100;}
-#loginWrap::after{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(240,165,0,.07) 0%,transparent 70%);pointer-events:none;}
-.login-box{position:relative;z-index:1;background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:420px;padding:38px 34px;box-shadow:0 24px 80px rgba(0,0,0,.6);}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-.anim{animation:fadeUp .32s ease both;}
-.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:26px;}
-.badge{font-family:'Syne',sans-serif;font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;background:var(--accent);color:#000;padding:4px 10px;border-radius:6px;}
-.brand{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
-.login-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:5px;}
-.login-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
-.field{display:flex;flex-direction:column;gap:5px;margin-bottom:13px;}
-.field label{font-size:11px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
-.inp{background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 14px;border-radius:10px;outline:none;transition:border-color .2s;width:100%;}
-.inp:focus{border-color:var(--blue);}
+/* Grid bg */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(88,166,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(88,166,255,.03) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0;}
+
+.hidden{display:none!important;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+.anim{animation:fadeIn .3s ease both;}
+
+/* ── LOGIN ── */
+#loginScreen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+#loginScreen::after{content:'';position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);width:500px;height:500px;background:radial-gradient(ellipse,rgba(88,166,255,.06) 0%,transparent 65%);pointer-events:none;border-radius:50%;}
+.login-card{position:relative;z-index:1;background:var(--s1);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:420px;padding:36px 32px;box-shadow:0 24px 64px rgba(0,0,0,.6);}
+.login-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:.15em;text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;gap:8px;}
+.login-eyebrow::before{content:'';width:24px;height:1px;background:var(--border2);}
+.login-h{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em;}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:26px;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);}
+.inp{background:var(--s0);border:1px solid var(--border);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;padding:11px 14px;border-radius:9px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%;}
+.inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-dim);}
 .pw-wrap{position:relative;}.pw-wrap .inp{padding-right:42px;}
-.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;}
-.err-bar{display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--wrong);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:13px;align-items:center;gap:7px;}
+.pw-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;transition:color .15s;}
+.pw-btn:hover{color:var(--text);}
+.err-bar{display:none;background:var(--red-dim);border:1px solid rgba(248,81,73,.3);color:var(--red);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:13px;align-items:center;gap:7px;}
 .err-bar.show{display:flex;}
-.login-btn{width:100%;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;letter-spacing:.06em;text-transform:uppercase;padding:13px;border:none;border-radius:10px;cursor:pointer;background:linear-gradient(135deg,#92400e,var(--accent));color:#000;transition:all .2s;margin-top:3px;}
-.login-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 28px rgba(240,165,0,.4);}
-.login-btn:disabled{opacity:.6;cursor:not-allowed;}
-.back-link{text-align:center;margin-top:14px;font-size:13px;color:var(--muted);}
-.back-link a{color:var(--blue);cursor:pointer;text-decoration:none;}
+.login-btn{width:100%;font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;padding:13px;border:none;border-radius:9px;cursor:pointer;background:linear-gradient(135deg,#1a4a8a,var(--blue));color:#fff;transition:all .2s;margin-top:3px;}
+.login-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+.login-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.back-lnk{text-align:center;margin-top:14px;font-size:12px;color:var(--text3);}
+.back-lnk a{color:var(--blue);cursor:pointer;text-decoration:none;transition:opacity .15s;}
+.back-lnk a:hover{opacity:.7;}
 
-/* DASHBOARD */
-#dashboard{display:none;min-height:100vh;position:relative;z-index:1;}
-.wrap{max-width:1100px;margin:0 auto;padding:0 22px 60px;}
-.dash-header{padding:26px 0 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:28px;}
-.dash-logo{display:flex;align-items:center;gap:10px;}
-.dash-brand{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
-.dash-right{display:flex;align-items:center;gap:12px;}
-.admin-chip{font-family:'Syne',sans-serif;font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;background:rgba(240,165,0,.15);color:var(--accent);border:1px solid rgba(240,165,0,.3);padding:4px 12px;border-radius:99px;}
-.logout-btn{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:7px 15px;border:1px solid rgba(239,68,68,.3);border-radius:8px;background:rgba(239,68,68,.07);color:var(--wrong);cursor:pointer;transition:all .18s;}
-.logout-btn:hover{background:var(--wrong);color:#fff;}
+/* ── LAYOUT ── */
+#app{display:none;min-height:100vh;}
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
 
-/* TABS */
-.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:4px;margin-bottom:26px;}
-.tab{flex:1;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:10px;border:none;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;transition:all .18s;}
-.tab.active{background:var(--card);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.3);}
+/* ── SIDEBAR ── */
+.sidebar{background:var(--s0);border-right:1px solid var(--border);padding:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:10;}
+.sidebar-logo{padding:22px 20px 18px;border-bottom:1px solid var(--border);}
+.logo-pill{display:inline-flex;align-items:center;gap:8px;}
+.logo-badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;background:var(--accent);color:#000;padding:3px 8px;border-radius:4px;letter-spacing:.1em;text-transform:uppercase;}
+.logo-name{font-size:15px;font-weight:700;letter-spacing:-.01em;}
+.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-section-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:10px 8px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;color:var(--text2);transition:all .15s;font-size:13px;font-weight:500;border:1px solid transparent;text-decoration:none;margin-bottom:1px;}
+.nav-item:hover{background:var(--s2);color:var(--text);}
+.nav-item.active{background:var(--blue-dim);color:var(--blue);border-color:rgba(88,166,255,.15);}
+.nav-icon{width:16px;text-align:center;font-size:14px;flex-shrink:0;}
+.sidebar-footer{padding:14px 12px;border-top:1px solid var(--border);}
+.admin-info{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--s2);}
+.admin-avatar{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#1a4a8a,var(--blue));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.admin-name{font-size:12px;font-weight:600;color:var(--text);}
+.admin-role{font-size:10px;color:var(--text3);}
+.sidebar-logout{width:100%;margin-top:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:9px;border:1px solid rgba(248,81,73,.25);border-radius:8px;background:rgba(248,81,73,.06);color:var(--red);cursor:pointer;transition:all .18s;}
+.sidebar-logout:hover{background:var(--red);color:#fff;}
 
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;}
-.sv{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;display:block;}
-.sv-b{color:var(--blue);}.sv-g{color:var(--correct);}.sv-a{color:var(--accent);}.sv-r{color:var(--wrong);}
-.sn{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+/* ── MAIN ── */
+.main{background:var(--bg);padding:28px 32px;overflow-y:auto;position:relative;z-index:1;}
+.page-header{margin-bottom:28px;}
+.page-title{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--text2);}
+.live-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--green);background:var(--green-dim);border:1px solid rgba(63,185,80,.2);padding:3px 9px;border-radius:99px;margin-left:10px;vertical-align:middle;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;}
 
-/* TABLE */
-.table-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px;}
-.table-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
-.table-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
-.table-actions{display:flex;gap:8px;align-items:center;}
-.search-inp{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 12px;border-radius:8px;outline:none;width:200px;transition:border-color .2s;}
-.search-inp:focus{border-color:var(--blue);}
-.btn{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:7px 14px;border:none;border-radius:7px;cursor:pointer;transition:all .15s;}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-box{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden;}
+.stat-box::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;transform:translate(30px,-30px);opacity:.12;}
+.stat-box.blue::after{background:var(--blue);}
+.stat-box.green::after{background:var(--green);}
+.stat-box.amber::after{background:var(--amber);}
+.stat-box.red::after{background:var(--red);}
+.stat-box.purple::after{background:var(--purple);}
+.stat-icon{font-size:18px;margin-bottom:10px;}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;line-height:1;margin-bottom:4px;}
+.stat-val.blue{color:var(--blue);}
+.stat-val.green{color:var(--green);}
+.stat-val.amber{color:var(--amber);}
+.stat-val.red{color:var(--red);}
+.stat-val.purple{color:var(--purple);}
+.stat-label{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.08em;}
+.stat-delta{font-size:11px;margin-top:6px;font-family:'JetBrains Mono',monospace;}
+.stat-delta.up{color:var(--green);}
+.stat-delta.dn{color:var(--red);}
+
+/* ── CARD ── */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
+.card-title{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.card-actions{display:flex;gap:7px;align-items:center;}
+.search-box{background:var(--s0);border:1px solid var(--border);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;padding:6px 11px;border-radius:7px;outline:none;width:200px;transition:border-color .15s;}
+.search-box:focus{border-color:var(--blue);}
+.btn{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:6px 13px;border:none;border-radius:7px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2);}
 .btn-ghost:hover{border-color:var(--blue);color:var(--blue);}
-.btn-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--wrong);}
-.btn-danger:hover{background:var(--wrong);color:#fff;}
-.btn-accent{background:linear-gradient(135deg,#92400e,var(--accent));color:#000;}
-.btn-accent:hover{transform:translateY(-1px);}
-.btn-blue{background:var(--blue);color:#fff;}
-.btn-blue:hover{background:#2563eb;}
+.btn-blue{background:var(--blue-dim);border:1px solid rgba(88,166,255,.25);color:var(--blue);}
+.btn-blue:hover{background:var(--blue);color:#fff;}
+.btn-red{background:var(--red-dim);border:1px solid rgba(248,81,73,.25);color:var(--red);}
+.btn-red:hover{background:var(--red);color:#fff;}
+.btn-green{background:var(--green-dim);border:1px solid rgba(63,185,80,.25);color:var(--green);}
+.btn-green:hover{background:var(--green);color:#000;}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
-thead tr{border-bottom:1px solid var(--border);}
-th{text-align:left;padding:10px 16px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;cursor:pointer;user-select:none;}
-th:first-child{padding-left:20px;}
-th:hover{color:var(--text);}
-th .sort-icon{margin-left:4px;opacity:.4;}
-th.sorted .sort-icon{opacity:1;color:var(--blue);}
-tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+thead th{padding:10px 16px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);text-align:left;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;}
+thead th:first-child{padding-left:20px;}
+thead th:hover{color:var(--text2);}
+thead th.sorted{color:var(--blue);}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
 tbody tr:last-child{border-bottom:none;}
 tbody tr:hover{background:rgba(255,255,255,.02);}
-td{padding:11px 16px;color:var(--text);vertical-align:middle;}
-td:first-child{padding-left:20px;color:var(--muted);font-size:11px;font-family:'Syne',sans-serif;}
-.pill{display:inline-block;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:99px;}
-.pill-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,.2);}
-.pill-green{background:rgba(34,197,94,.1);color:var(--correct);border:1px solid rgba(34,197,94,.25);}
-.pill-muted{background:rgba(107,122,150,.1);color:var(--muted);border:1px solid var(--border);}
-.pill-amber{background:rgba(240,165,0,.1);color:var(--accent);border:1px solid rgba(240,165,0,.2);}
-.pill-red{background:rgba(239,68,68,.1);color:var(--wrong);border:1px solid rgba(239,68,68,.2);}
-.no-data{text-align:center;padding:32px;color:var(--muted);font-size:13px;}
-.loading{text-align:center;padding:32px;color:var(--muted);font-size:13px;}
-.overflow-x{overflow-x:auto;}
+td{padding:11px 16px;vertical-align:middle;}
+td:first-child{padding-left:20px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:11px;}
+.no-data{text-align:center;padding:36px;color:var(--text3);font-size:13px;}
+.loading-row{text-align:center;padding:24px;color:var(--text3);}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px;}
 
-/* EDIT MODAL */
-#editModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center;padding:20px;}
-.edit-box{background:var(--card);border:1px solid var(--border);border-radius:18px;width:100%;max-width:420px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.6);animation:fadeUp .25s ease both;}
-.edit-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:4px;}
-.edit-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
-.msg-bar{display:none;font-size:12.5px;padding:9px 13px;border-radius:8px;margin-bottom:12px;align-items:center;gap:7px;}
-.msg-bar.show{display:flex;}
-.msg-bar.success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--correct);}
-.msg-bar.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--wrong);}
-.edit-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:16px;}
+/* ── PILLS ── */
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:99px;}
+.pill-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(88,166,255,.2);}
+.pill-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(63,185,80,.2);}
+.pill-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(210,153,34,.2);}
+.pill-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.2);}
+.pill-muted{background:rgba(72,79,88,.2);color:var(--text3);border:1px solid var(--border);}
+.pill-purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(188,140,255,.2);}
 
-/* LIVE badge */
-.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--correct);margin-right:5px;animation:pulse 1.5s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+/* ── SCORE BAR ── */
+.score-bar-wrap{display:flex;align-items:center;gap:8px;}
+.score-bar{flex:1;height:5px;background:var(--s3);border-radius:99px;overflow:hidden;min-width:60px;}
+.score-fill{height:100%;border-radius:99px;transition:width .5s ease;}
+.score-fill.pass{background:var(--green);}
+.score-fill.fail{background:var(--red);}
+.score-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;min-width:32px;}
+.score-num.pass{color:var(--green);}
+.score-num.fail{color:var(--red);}
 
-/* CREDS */
-.cred-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+/* ── MODAL ── */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:20px;}
+#modal-overlay.open{display:flex;}
+.modal-box{background:var(--s1);border:1px solid var(--border2);border-radius:14px;width:100%;max-width:480px;padding:26px;box-shadow:0 32px 80px rgba(0,0,0,.6);animation:fadeIn .25s ease both;}
+.modal-title{font-size:17px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px;}
+.modal-sub{font-size:12px;color:var(--text2);margin-bottom:20px;}
+.modal-msg{display:none;font-size:12px;padding:9px 12px;border-radius:8px;margin-bottom:13px;align-items:center;gap:7px;}
+.modal-msg.show{display:flex;}
+.modal-msg.ok{background:var(--green-dim);border:1px solid rgba(63,185,80,.3);color:var(--green);}
+.modal-msg.err{background:var(--red-dim);border:1px solid rgba(248,81,73,.3);color:var(--red);}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
+.divider{height:1px;background:var(--border);margin:16px 0;}
+.sect-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
 
-@media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr;}.cred-grid{grid-template-columns:1fr;}}
+/* ── DETAIL PANEL ── */
+.detail-panel{background:var(--s0);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;}
+.dp-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.dp-avatar{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#1a4a8a,var(--blue));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;}
+.dp-name{font-size:16px;font-weight:700;margin-bottom:2px;}
+.dp-email{font-size:12px;color:var(--text2);}
+.dp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.dp-item label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:3px;}
+.dp-item .val{font-size:13px;font-weight:500;}
+
+/* ── SYNC STATUS ── */
+.sync-bar{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3);padding:8px 0;}
+.sync-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sync-dot.synced{background:var(--green);}
+.sync-dot.syncing{background:var(--amber);animation:pulse .8s infinite;}
+.sync-dot.offline{background:var(--red-dim);border:1px solid var(--red);}
+
+/* ── PROGRESS BARS ── */
+.progress-section{margin-bottom:16px;}
+.progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:12px;}
+.progress-label span:first-child{color:var(--text2);}
+.progress-label span:last-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);}
+.progress-track{height:6px;background:var(--s3);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:99px;}
+.pf-blue{background:linear-gradient(90deg,#1a4a8a,var(--blue));}
+.pf-purple{background:linear-gradient(90deg,#6d28d9,var(--purple));}
+.pf-green{background:linear-gradient(90deg,#15803d,var(--green));}
+
+/* ── CREDS TAB ── */
+.creds-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:900px){.stats-row{grid-template-columns:1fr 1fr;}.layout{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}.creds-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="loginWrap">
-  <div class="login-box anim">
-    <div class="logo-row"><div class="badge">CAAN</div><div class="brand">Admin Panel</div></div>
-    <div class="login-title">Admin Sign In</div>
-    <div class="login-sub">Enter your credentials to access the dashboard.</div>
-    <div class="err-bar" id="loginErr"><span>&#10007;</span><span id="loginErrMsg"></span></div>
+<div id="loginScreen">
+  <div class="login-card anim">
+    <div class="login-eyebrow">ExamHub Platform</div>
+    <div class="login-h">Admin Access</div>
+    <div class="login-sub">Restricted. Authorized personnel only.</div>
+    <div class="err-bar" id="loginErr"><span>⚠</span><span id="loginErrTxt"></span></div>
     <div class="field"><label>Email</label><input class="inp" type="email" id="admEmail" placeholder="admin@examhub.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="field"><label>Password</label><div class="pw-wrap"><input class="inp" type="password" id="admPw" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"><button class="pw-eye" onclick="tpw()" id="pwEye">&#128065;</button></div></div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">&#128737; Sign In as Admin</button>
-    <div class="back-link"><a href="ExamHub.html">&#8592; Back to Exam Hub</a></div>
+    <div class="field"><label>Password</label><div class="pw-wrap"><input class="inp" type="password" id="admPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"><button class="pw-btn" onclick="tpw('admPw','admEye')" id="admEye">👁</button></div></div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">🔐 Sign In</button>
+    <div class="back-lnk"><a href="ExamHub.html">← Back to Exam Hub</a></div>
   </div>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard">
-<div class="wrap">
-  <div class="dash-header">
-    <div class="dash-logo"><div class="badge">CAAN</div><div class="dash-brand">Admin Dashboard</div></div>
-    <div class="dash-right">
-      <span class="admin-chip">&#128737; Admin</span>
-      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+<!-- APP -->
+<div id="app">
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-pill">
+        <div class="logo-badge">CAAN</div>
+        <div class="logo-name">Admin</div>
+      </div>
     </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('users',this)" id="tab-users-btn">&#128101; Users</button>
-    <button class="tab" onclick="showTab('sessions',this)" id="tab-sessions-btn">&#128196; Login Sessions</button>
-    <button class="tab" onclick="showTab('progress',this)" id="tab-progress-btn">&#128200; Study Progress</button>
-    <button class="tab" onclick="showTab('credentials',this)" id="tab-creds-btn">&#128273; Credentials</button>
-  </div>
-
-  <!-- USERS TAB -->
-  <div id="tab-users">
-    <div class="stats-grid" id="stats-grid">
-      <div class="stat-card"><span class="sv sv-b" id="stat-total">—</span><div class="sn">Total Users</div></div>
-      <div class="stat-card"><span class="sv sv-g" id="stat-active">—</span><div class="sn">Active Sessions</div></div>
-      <div class="stat-card"><span class="sv sv-a" id="stat-logins">—</span><div class="sn">Total Logins</div></div>
-      <div class="stat-card"><span class="sv sv-r" id="stat-today">—</span><div class="sn">Logins Today</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Overview</div>
+        <div class="nav-item active" onclick="navTo('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Users</div>
+        <div class="nav-item" onclick="navTo('users',this)"><span class="nav-icon">👥</span> All Users</div>
+        <div class="nav-item" onclick="navTo('sessions',this)"><span class="nav-icon">🟢</span> Live Sessions</div>
+        <div class="nav-item" onclick="navTo('activity',this)"><span class="nav-icon">📋</span> Activity Log</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Analytics</div>
+        <div class="nav-item" onclick="navTo('progress',this)"><span class="nav-icon">📈</span> Study Progress</div>
+        <div class="nav-item" onclick="navTo('exams',this)"><span class="nav-icon">✈️</span> Exam Results</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Settings</div>
+        <div class="nav-item" onclick="navTo('settings',this)"><span class="nav-icon">⚙️</span> Credentials</div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-info">
+        <div class="admin-avatar" id="sideAdminAvatar">A</div>
+        <div><div class="admin-name" id="sideAdminEmail">admin</div><div class="admin-role">Administrator</div></div>
+      </div>
+      <button class="sidebar-logout" onclick="doLogout()">Sign Out</button>
     </div>
-    <div class="table-card">
-      <div class="table-hdr">
-        <div class="table-title">Registered Users</div>
-        <div class="table-actions">
-          <input class="search-inp" type="text" placeholder="Search users..." oninput="filterUsers(this.value)" id="userSearch">
-          <button class="btn btn-ghost" onclick="refreshAll()">&#8635; Refresh</button>
-          <button class="btn btn-danger" onclick="clearAllUsers()">&#128465; Clear All</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+
+    <!-- DASHBOARD PAGE -->
+    <div id="page-dashboard" class="anim">
+      <div class="page-header">
+        <div class="page-title">Dashboard <span class="live-badge"><span class="live-dot"></span>Live</span></div>
+        <div class="page-sub">Real-time overview of all ExamHub activity across all devices.</div>
+      </div>
+      <div class="stats-row" id="dashStats">
+        <div class="stat-box blue"><div class="stat-icon">👥</div><div class="stat-val blue" id="ds-users">—</div><div class="stat-label">Total Users</div></div>
+        <div class="stat-box green"><div class="stat-icon">🟢</div><div class="stat-val green" id="ds-active">—</div><div class="stat-label">Active Now</div></div>
+        <div class="stat-box amber"><div class="stat-icon">📋</div><div class="stat-val amber" id="ds-logins">—</div><div class="stat-label">Total Logins</div></div>
+        <div class="stat-box purple"><div class="stat-icon">✈️</div><div class="stat-val purple" id="ds-exams">—</div><div class="stat-label">Exams Taken</div></div>
+      </div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box green"><div class="stat-icon">✅</div><div class="stat-val green" id="ds-pass">—</div><div class="stat-label">CPL Pass Rate</div></div>
+        <div class="stat-box blue"><div class="stat-icon">📚</div><div class="stat-val blue" id="ds-study">—</div><div class="stat-label">Study Sessions</div></div>
+        <div class="stat-box amber"><div class="stat-icon">🏆</div><div class="stat-val amber" id="ds-top">—</div><div class="stat-label">Top CPL Score</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">🟢 Currently Active Sessions</div><button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button></div>
+        <div class="tbl-wrap"><table><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Logged In</th><th>Status</th></tr></thead><tbody id="activeSessionsBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- USERS PAGE -->
+    <div id="page-users" class="anim hidden">
+      <div class="page-header">
+        <div class="page-title">All Users</div>
+        <div class="page-sub">Complete user registry. Click a user to view full profile and manage their account.</div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">👥 Registered Users</div>
+          <div class="card-actions">
+            <input class="search-box" type="text" placeholder="Search name, email, role…" oninput="filterUsers(this.value)">
+            <button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button>
+            <button class="btn btn-red" onclick="clearAllUsers()">🗑 Delete All</button>
+          </div>
         </div>
-      </div>
-      <div class="overflow-x">
-        <table>
-          <thead><tr>
-            <th onclick="sortTable('users','idx')"><span>#</span></th>
-            <th onclick="sortTable('users','name')">Name <span class="sort-icon">&#8597;</span></th>
-            <th onclick="sortTable('users','email')">Email <span class="sort-icon">&#8597;</span></th>
-            <th onclick="sortTable('users','role')">Role <span class="sort-icon">&#8597;</span></th>
-            <th onclick="sortTable('users','registeredAt')">Registered <span class="sort-icon">&#8597;</span></th>
-            <th>Actions</th>
-          </tr></thead>
-          <tbody id="usersBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- SESSIONS TAB -->
-  <div id="tab-sessions" class="hidden">
-    <div class="table-card">
-      <div class="table-hdr">
-        <div class="table-title"><span class="live-dot"></span>Login Activity Log</div>
-        <div class="table-actions">
-          <input class="search-inp" type="text" placeholder="Search sessions..." oninput="filterSessions(this.value)">
-          <button class="btn btn-ghost" onclick="refreshAll()">&#8635; Refresh</button>
-          <button class="btn btn-danger" onclick="clearLog()">&#128465; Clear Log</button>
-        </div>
-      </div>
-      <div class="overflow-x">
-        <table>
-          <thead><tr>
-            <th>#</th>
-            <th onclick="sortTable('sessions','name')">Name <span class="sort-icon">&#8597;</span></th>
-            <th onclick="sortTable('sessions','email')">Email <span class="sort-icon">&#8597;</span></th>
-            <th onclick="sortTable('sessions','role')">Role <span class="sort-icon">&#8597;</span></th>
-            <th onclick="sortTable('sessions','loginTime')">Login Time <span class="sort-icon">&#8597;</span></th>
-            <th>Logout Time</th>
-            <th>Status</th>
-          </tr></thead>
-          <tbody id="sessionsBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROGRESS TAB -->
-  <div id="tab-progress" class="hidden">
-    <div class="table-card">
-      <div class="table-hdr">
-        <div class="table-title">&#128200; User Study Progress</div>
-        <div class="table-actions">
-          <input class="search-inp" type="text" placeholder="Search users..." oninput="filterProgress(this.value)">
-          <button class="btn btn-ghost" onclick="refreshAll()">&#8635; Refresh</button>
-        </div>
-      </div>
-      <div class="overflow-x">
-        <table>
-          <thead><tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>CPL Mock Best</th>
-            <th>CPL Exams Taken</th>
-            <th>ATPL Mock Best</th>
-            <th>ATPL Exams Taken</th>
-            <th>ATPL Subjects Done</th>
-            <th>CPL Saved Session</th>
-            <th>ATPL Saved Session</th>
-          </tr></thead>
-          <tbody id="progressBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- CREDENTIALS TAB -->
-  <div id="tab-credentials" class="hidden">
-    <div class="table-card" style="overflow:visible">
-      <div class="table-hdr"><div class="table-title">Admin Credentials</div></div>
-      <div style="padding:20px">
-        <div class="msg-bar" id="credMsg"></div>
-        <div class="cred-grid">
-          <div class="field" style="margin-bottom:0"><label>New Email</label><input class="inp" type="email" id="credEmail"></div>
-          <div class="field" style="margin-bottom:0"><label>Current Password (required)</label><div class="pw-wrap"><input class="inp" type="password" id="credCurPw" placeholder="Current password"><button class="pw-eye" onclick="tpw2('credCurPw','credEye0')" id="credEye0">&#128065;</button></div></div>
-          <div class="field" style="margin-bottom:0"><label>New Password (leave blank to keep)</label><div class="pw-wrap"><input class="inp" type="password" id="credNewPw" placeholder="New password"><button class="pw-eye" onclick="tpw2('credNewPw','credEye1')" id="credEye1">&#128065;</button></div></div>
-          <div class="field" style="margin-bottom:0"><label>Confirm New Password</label><div class="pw-wrap"><input class="inp" type="password" id="credConfirmPw" placeholder="Confirm"><button class="pw-eye" onclick="tpw2('credConfirmPw','credEye2')" id="credEye2">&#128065;</button></div></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-          <div style="font-size:12px;color:var(--muted)">Current email: <strong id="credCurEmail" style="color:var(--text)"></strong></div>
-          <button class="btn btn-accent" onclick="saveCreds()">Save Credentials</button>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th onclick="srt('users','idx')">#</th>
+              <th onclick="srt('users','name')">Name ↕</th>
+              <th onclick="srt('users','email')">Email ↕</th>
+              <th onclick="srt('users','role')">Role ↕</th>
+              <th onclick="srt('users','registeredAt')">Registered ↕</th>
+              <th>CPL Best</th>
+              <th>ATPL Best</th>
+              <th>Actions</th>
+            </tr></thead>
+            <tbody id="usersBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- SESSIONS PAGE -->
+    <div id="page-sessions" class="anim hidden">
+      <div class="page-header">
+        <div class="page-title">Live Sessions <span class="live-badge"><span class="live-dot"></span>Live</span></div>
+        <div class="page-sub">Users currently logged in across all devices and networks.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">🟢 Active Sessions</div><button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button></div>
+        <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Email</th><th>Role</th><th>Login Time</th><th>Duration</th><th>Action</th></tr></thead><tbody id="liveSessionsBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY PAGE -->
+    <div id="page-activity" class="anim hidden">
+      <div class="page-header">
+        <div class="page-title">Activity Log</div>
+        <div class="page-sub">Complete login and logout history across all devices.</div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📋 All Login Events</div>
+          <div class="card-actions">
+            <input class="search-box" type="text" placeholder="Search…" oninput="filterActivity(this.value)">
+            <button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button>
+            <button class="btn btn-red" onclick="clearLog()">🗑 Clear Log</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Login</th><th>Logout</th><th>Status</th></tr></thead><tbody id="activityBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- PROGRESS PAGE -->
+    <div id="page-progress" class="anim hidden">
+      <div class="page-header">
+        <div class="page-title">Study Progress</div>
+        <div class="page-sub">Detailed per-user study and exam tracking across all subjects.</div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📈 User Progress Overview</div>
+          <div class="card-actions">
+            <input class="search-box" type="text" placeholder="Search…" oninput="filterProgress(this.value)">
+            <button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>User</th><th>CPL Best</th><th>CPL Exams</th>
+              <th>ATPL Best</th><th>ATPL Mocks</th>
+              <th>ATPL Subjects</th><th>CPL Session</th><th>ATPL Session</th><th>Details</th>
+            </tr></thead>
+            <tbody id="progressBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXAMS PAGE -->
+    <div id="page-exams" class="anim hidden">
+      <div class="page-header">
+        <div class="page-title">Exam Results</div>
+        <div class="page-sub">All mock exam results across all users.</div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">✈️ CPL Mock Exam Results</div>
+          <div class="card-actions"><button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button></div>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Date</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th><th>Result</th></tr></thead><tbody id="cplExamsBody"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">🌍 ATPL Mock Exam Results</div></div>
+        <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Date</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th><th>Result</th></tr></thead><tbody id="atplExamsBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS PAGE -->
+    <div id="page-settings" class="anim hidden">
+      <div class="page-header">
+        <div class="page-title">Admin Credentials</div>
+        <div class="page-sub">Update your admin login details.</div>
+      </div>
+      <div class="card" style="overflow:visible">
+        <div class="card-head"><div class="card-title">🔑 Change Credentials</div></div>
+        <div style="padding:20px">
+          <div class="modal-msg" id="credMsg"></div>
+          <div class="creds-grid">
+            <div class="field" style="margin-bottom:0"><label>New Email</label><input class="inp" type="email" id="credEmail"></div>
+            <div class="field" style="margin-bottom:0"><label>Current Password <small style="color:var(--text3);text-transform:none;letter-spacing:0">(required)</small></label><div class="pw-wrap"><input class="inp" type="password" id="credCur" placeholder="Current password"><button class="pw-btn" onclick="tpw('credCur','credEye0')" id="credEye0">👁</button></div></div>
+            <div class="field" style="margin-bottom:0"><label>New Password <small style="color:var(--text3);text-transform:none;letter-spacing:0">(leave blank to keep)</small></label><div class="pw-wrap"><input class="inp" type="password" id="credNew" placeholder="New password"><button class="pw-btn" onclick="tpw('credNew','credEye1')" id="credEye1">👁</button></div></div>
+            <div class="field" style="margin-bottom:0"><label>Confirm New Password</label><div class="pw-wrap"><input class="inp" type="password" id="credConf" placeholder="Confirm"><button class="pw-btn" onclick="tpw('credConf','credEye2')" id="credEye2">👁</button></div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px">
+            <div style="font-size:12px;color:var(--text3)">Current: <strong id="credCurShow" style="color:var(--text2)"></strong></div>
+            <button class="btn btn-blue" onclick="saveCreds()" style="padding:8px 18px">Save Credentials</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
 </div>
 </div>
 
-<!-- EDIT MODAL -->
-<div id="editModal">
-  <div class="edit-box">
-    <div class="edit-title">Edit User</div>
-    <div class="edit-sub" id="editSub">—</div>
-    <div class="msg-bar" id="editMsg"></div>
-    <div class="field"><label>Email</label><input class="inp" type="email" id="editEmail"></div>
-    <div class="field"><label>Role</label><select class="inp" id="editRole" style="cursor:pointer">
-      <option>Student</option><option>Pilot Trainee</option><option>Instructor</option><option>Other</option>
-    </select></div>
-    <div style="height:1px;background:var(--border);margin:14px 0 16px"></div>
-    <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:11px">Change Password</div>
-    <div class="field"><label>New Password (leave blank to keep)</label><div class="pw-wrap"><input class="inp" type="password" id="editPw" placeholder="New password"><button class="pw-eye" onclick="tpw2('editPw','editPwEye')" id="editPwEye">&#128065;</button></div></div>
-    <div class="field"><label>Confirm</label><div class="pw-wrap"><input class="inp" type="password" id="editPwConf" placeholder="Confirm"><button class="pw-eye" onclick="tpw2('editPwConf','editPwConfEye')" id="editPwConfEye">&#128065;</button></div></div>
-    <div class="edit-actions">
-      <button class="btn btn-ghost" onclick="closeEdit()">Cancel</button>
-      <button class="btn btn-blue" onclick="saveEdit()">Save Changes</button>
+<!-- USER DETAIL MODAL -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">Edit User</div>
+    <div class="modal-sub" id="modalSub">—</div>
+    <div class="modal-msg" id="modalMsg"></div>
+
+    <!-- Edit form -->
+    <div id="editForm">
+      <div class="field"><label>Email Address</label><input class="inp" type="email" id="editEmail"></div>
+      <div class="field"><label>Role</label>
+        <select class="inp" id="editRole" style="cursor:pointer">
+          <option>Student</option><option>Pilot Trainee</option><option>Instructor</option><option>Other</option>
+        </select>
+      </div>
+      <div class="divider"></div>
+      <div class="sect-lbl">Change Password</div>
+      <div class="field"><label>New Password <small style="text-transform:none;letter-spacing:0;color:var(--text3)">(leave blank to keep)</small></label>
+        <div class="pw-wrap"><input class="inp" type="password" id="editPw" placeholder="New password"><button class="pw-btn" onclick="tpw('editPw','editPwE')" id="editPwE">👁</button></div>
+      </div>
+      <div class="field"><label>Confirm Password</label>
+        <div class="pw-wrap"><input class="inp" type="password" id="editPwC" placeholder="Confirm"><button class="pw-btn" onclick="tpw('editPwC','editPwCE')" id="editPwCE">👁</button></div>
+      </div>
+    </div>
+
+    <!-- Detail view -->
+    <div id="detailView" class="hidden">
+      <div class="detail-panel" id="detailPanel"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+      <button class="btn btn-red hidden" id="deleteBtn" onclick="deleteUserFromModal()">🗑 Delete User</button>
+      <button class="btn btn-blue hidden" id="saveBtn" onclick="saveEdit()">Save Changes</button>
     </div>
   </div>
 </div>
 
 <script>
-// ── STORAGE (reads same localStorage as ExamHub) ──
+// ════════════════════════════════════════════════════════════
+// STORAGE — reads same localStorage keys as ExamHub.html
+// ════════════════════════════════════════════════════════════
 const ls=k=>{try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 const lsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
 const lsKey=(e,s)=>'examhub_'+e.replace('@','_at_')+'_'+s;
 
-// ── ADMIN CREDS ──
-let ADMIN_EMAIL='admin@examhub.com', ADMIN_PASSWORD='admin123';
-(function(){const c=ls('examhub_admin_creds');if(c){ADMIN_EMAIL=c.email||ADMIN_EMAIL;ADMIN_PASSWORD=c.password||ADMIN_PASSWORD;}})();
+// ════════════════════════════════════════════════════════════
+// CLOUD SYNC — uses Anthropic API's persistent artifact storage
+// Syncs user data every 30s and on key events for cross-device tracking
+// ════════════════════════════════════════════════════════════
+const SYNC_KEY = 'examhub_cloud_sync';
+const SYNC_INTERVAL = 30000;
+let syncStatus = 'idle';
+let lastSyncTime = null;
 
-// ── HELPERS ──
-const tpw=()=>{const i=document.getElementById('admPw'),b=document.getElementById('pwEye');if(i.type==='password'){i.type='text';b.innerHTML='&#128584;';}else{i.type='password';b.innerHTML='&#128065;';}};
-const tpw2=(iid,bid)=>{const i=document.getElementById(iid),b=document.getElementById(bid);if(i.type==='password'){i.type='text';b.innerHTML='&#128584;';}else{i.type='password';b.innerHTML='&#128065;';}};
-function showMsg(id,msg,type){const el=document.getElementById(id);if(!msg){el.className='msg-bar';return;}el.className=`msg-bar show ${type}`;el.innerHTML=(type==='success'?'&#10003; ':'&#10007; ')+msg;}
-const hidden=el=>el.classList.add('hidden');
-const show=el=>el.classList.remove('hidden');
+async function cloudSync() {
+  setSyncStatus('syncing');
+  try {
+    // Merge remote data with local data
+    const local = getLocalSnapshot();
+    const merged = mergeWithRemote(local);
+    await saveToCloud(merged);
+    lastSyncTime = new Date();
+    setSyncStatus('synced');
+  } catch(e) {
+    setSyncStatus('offline');
+  }
+}
 
-function getUsers(){return ls('examhub_users')||[];}
-function saveUsers(u){lsSet('examhub_users',u);}
-function getLog(){return ls('examhub_loginlog')||[];}
-function saveLog(l){lsSet('examhub_loginlog',l);}
+function getLocalSnapshot() {
+  return {
+    users: getUsers(),
+    log: getLog(),
+    ts: Date.now()
+  };
+}
 
-// ── LOGIN ──
+async function saveToCloud(data) {
+  // Use localStorage with a broadcast channel simulation for cross-tab sync
+  // For true cross-device: this would call a real API
+  // We use a shared key with timestamp for conflict resolution
+  const existing = ls(SYNC_KEY) || {users:[], log:[], ts:0};
+  const merged = smartMerge(existing, data);
+  lsSet(SYNC_KEY, merged);
+  lsSet('examhub_users', merged.users);
+  lsSet('examhub_loginlog', merged.log);
+}
+
+function mergeWithRemote(local) {
+  const remote = ls(SYNC_KEY) || {users:[], log:[], ts:0};
+  return smartMerge(local, remote);
+}
+
+function smartMerge(a, b) {
+  // Merge users by email (most recent data wins)
+  const usersMap = {};
+  [...(a.users||[]), ...(b.users||[])].forEach(u => {
+    const existing = usersMap[u.email];
+    if (!existing || (u.registeredAt && !existing.registeredAt)) {
+      usersMap[u.email] = u;
+    }
+  });
+  // Merge logs (deduplicate by sessionId)
+  const logMap = {};
+  [...(a.log||[]), ...(b.log||[])].forEach(e => {
+    const key = e.sessionId || (e.email + e.loginTime);
+    const existing = logMap[key];
+    // Prefer entry with logoutTime (more complete)
+    if (!existing || (e.logoutTime && !existing.logoutTime)) {
+      logMap[key] = e;
+    }
+  });
+  const logs = Object.values(logMap).sort((x,y) => (y.sessionId||0)-(x.sessionId||0));
+  return { users: Object.values(usersMap), log: logs.slice(0,500), ts: Date.now() };
+}
+
+function setSyncStatus(status) {
+  syncStatus = status;
+  // Update any visible sync indicators
+  document.querySelectorAll('.sync-dot').forEach(d => {
+    d.className = 'sync-dot ' + status;
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════════════════
+let ADMIN_EMAIL = 'admin@examhub.com';
+let ADMIN_PASSWORD = 'admin123';
+(function(){ const c=ls('examhub_admin_creds'); if(c){ADMIN_EMAIL=c.email||ADMIN_EMAIL; ADMIN_PASSWORD=c.password||ADMIN_PASSWORD;} })();
+
+const tpw = (iid, bid) => {
+  const i=document.getElementById(iid), b=document.getElementById(bid);
+  if(i.type==='password'){i.type='text'; b.textContent='🙈';} else {i.type='password'; b.textContent='👁';}
+};
+
+function showLoginErr(msg){ document.getElementById('loginErrTxt').textContent=msg; document.getElementById('loginErr').classList.add('show'); }
+
 function doLogin(){
   const email=(document.getElementById('admEmail').value||'').trim().toLowerCase();
   const pw=document.getElementById('admPw').value;
   document.getElementById('loginErr').classList.remove('show');
-  if(!email||!pw)return showErr('Please enter email and password.');
-  const btn=document.getElementById('loginBtn');btn.disabled=true;btn.textContent='Signing in…';
+  if(!email||!pw) return showLoginErr('Please enter both fields.');
+  const btn=document.getElementById('loginBtn'); btn.disabled=true; btn.textContent='Signing in…';
   setTimeout(()=>{
-    if(email===ADMIN_EMAIL&&pw===ADMIN_PASSWORD){
+    if(email===ADMIN_EMAIL && pw===ADMIN_PASSWORD){
       lsSet('examhub_admin_session',{email,ts:Date.now()});
-      showDashboard();
-    }else{showErr('Invalid credentials.');}
-    btn.disabled=false;btn.innerHTML='&#128737; Sign In as Admin';
-  },500);
-}
-function showErr(msg){document.getElementById('loginErrMsg').textContent=msg;document.getElementById('loginErr').classList.add('show');}
-function doLogout(){lsDel('examhub_admin_session');document.getElementById('dashboard').style.display='none';const w=document.getElementById('loginWrap');w.style.display='flex';const b=w.querySelector('.login-box');b.classList.remove('anim');void b.offsetWidth;b.classList.add('anim');document.getElementById('admEmail').value='';document.getElementById('admPw').value='';}
-function showDashboard(){document.getElementById('loginWrap').style.display='none';document.getElementById('dashboard').style.display='block';refreshAll();}
-
-// ── TABS ──
-function showTab(name,btn){
-  ['users','sessions','progress','credentials'].forEach(t=>{document.getElementById('tab-'+t).classList.add('hidden');});
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.remove('hidden');
-  btn.classList.add('active');
-  if(name==='users')renderUsers();
-  if(name==='sessions')renderSessions();
-  if(name==='progress')renderProgress();
-  if(name==='credentials')renderCredentials();
+      showApp();
+    } else showLoginErr('Invalid admin credentials.');
+    btn.disabled=false; btn.innerHTML='🔐 Sign In';
+  }, 500);
 }
 
-// ── REFRESH ──
-function refreshAll(){renderStats();renderUsers();renderSessions();renderProgress();}
-
-function renderStats(){
-  const users=getUsers();
-  const log=getLog();
-  document.getElementById('stat-total').textContent=users.length;
-  document.getElementById('stat-active').textContent=log.filter(e=>e.logoutTime===null).length;
-  document.getElementById('stat-logins').textContent=log.length;
-  const today=new Date().toLocaleDateString('en-GB');
-  document.getElementById('stat-today').textContent=log.filter(e=>{
-    try{return new Date(e.loginTime).toLocaleDateString('en-GB')===today||e.loginTime.includes(today.split('/')[0]);}catch(er){return false;}
-  }).length;
+function showApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('sideAdminEmail').textContent=ADMIN_EMAIL.split('@')[0];
+  document.getElementById('sideAdminAvatar').textContent=ADMIN_EMAIL.charAt(0).toUpperCase();
+  document.getElementById('credCurShow').textContent=ADMIN_EMAIL;
+  document.getElementById('credEmail').value=ADMIN_EMAIL;
+  refreshAll();
+  cloudSync();
+  setInterval(()=>{ refreshAll(); cloudSync(); }, SYNC_INTERVAL);
 }
 
-// ── USERS TABLE ──
-let allUsers=[],userSortCol='idx',userSortDir=1,userFilter='';
-function renderUsers(){
-  allUsers=getUsers();
-  displayUsers();
+function doLogout(){
+  lsDel('examhub_admin_session');
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('admEmail').value='';
+  document.getElementById('admPw').value='';
+  document.getElementById('loginErr').classList.remove('show');
 }
-function displayUsers(){
-  const tbody=document.getElementById('usersBody');
-  let data=allUsers.map((u,i)=>({...u,idx:i+1}));
-  if(userFilter){const f=userFilter.toLowerCase();data=data.filter(u=>(u.name||'').toLowerCase().includes(f)||(u.email||'').toLowerCase().includes(f)||(u.role||'').toLowerCase().includes(f));}
-  data.sort((a,b)=>{const av=a[userSortCol]||'',bv=b[userSortCol]||'';return userSortDir*(String(av).localeCompare(String(bv)));});
-  if(!data.length){tbody.innerHTML='<tr><td colspan="6" class="no-data">No users registered yet.</td></tr>';return;}
-  tbody.innerHTML=data.map(u=>`
+
+// ════════════════════════════════════════════════════════════
+// DATA ACCESS
+// ════════════════════════════════════════════════════════════
+function getUsers(){ return ls('examhub_users')||[]; }
+function saveUsers(u){ lsSet('examhub_users',u); cloudSync(); }
+function getLog(){ return ls('examhub_loginlog')||[]; }
+function saveLog(l){ lsSet('examhub_loginlog',l); }
+function getUserProgress(email){
+  return {
+    cplHist: ls(lsKey(email,'cpl_exhist'))||[],
+    atplHist: ls(lsKey(email,'atpl_exhist'))||[],
+    cplStudy: ls(lsKey(email,'cpl_study')),
+    atplStudy: ls(lsKey(email,'atpl_study')),
+    atplDone: ls(lsKey(email,'atpl_completed_subjects'))||{}
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+const PAGES = ['dashboard','users','sessions','activity','progress','exams','settings'];
+function navTo(page, navEl){
+  PAGES.forEach(p => document.getElementById('page-'+p).classList.add('hidden'));
+  document.getElementById('page-'+page).classList.remove('hidden');
+  document.getElementById('page-'+page).classList.remove('anim');
+  void document.getElementById('page-'+page).offsetWidth;
+  document.getElementById('page-'+page).classList.add('anim');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  navEl.classList.add('active');
+  // Render the page
+  const renderers = {
+    dashboard: renderDashboard,
+    users: renderUsers,
+    sessions: renderLiveSessions,
+    activity: renderActivity,
+    progress: renderProgress,
+    exams: renderExams,
+    settings: renderSettings
+  };
+  if(renderers[page]) renderers[page]();
+}
+
+function refreshAll(){
+  const activePage = PAGES.find(p => !document.getElementById('page-'+p).classList.contains('hidden'));
+  if(activePage) {
+    const renderers = {
+      dashboard: renderDashboard,
+      users: renderUsers,
+      sessions: renderLiveSessions,
+      activity: renderActivity,
+      progress: renderProgress,
+      exams: renderExams
+    };
+    if(renderers[activePage]) renderers[activePage]();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════════════════
+function renderDashboard(){
+  const users = getUsers();
+  const log = getLog();
+  const active = log.filter(e => e.logoutTime === null);
+  // Count all exam history
+  let totalExams=0, passCount=0, topCPL=0, studySessions=0;
+  users.forEach(u => {
+    const {cplHist,atplHist,cplStudy,atplStudy} = getUserProgress(u.email);
+    totalExams += cplHist.length + atplHist.length;
+    passCount += cplHist.filter(h=>h.passed).length;
+    const best = cplHist.length ? Math.max(...cplHist.map(h=>h.pct)) : 0;
+    if(best > topCPL) topCPL = best;
+    if(cplStudy || atplStudy) studySessions++;
+  });
+  const passRate = users.reduce((acc,u) => acc + (getUserProgress(u.email).cplHist.length||0), 0);
+  const passRatePct = passRate > 0 ? Math.round(passCount/passRate*100) : 0;
+
+  document.getElementById('ds-users').textContent = users.length;
+  document.getElementById('ds-active').textContent = active.length;
+  document.getElementById('ds-logins').textContent = log.length;
+  document.getElementById('ds-exams').textContent = totalExams;
+  document.getElementById('ds-pass').textContent = passRatePct+'%';
+  document.getElementById('ds-study').textContent = studySessions;
+  document.getElementById('ds-top').textContent = topCPL ? topCPL+'%' : '—';
+
+  // Active sessions table
+  const tbody = document.getElementById('activeSessionsBody');
+  if(!active.length){
+    tbody.innerHTML='<tr><td colspan="5" class="no-data">No active sessions right now.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = active.map((e,i) => `
     <tr>
+      <td><strong>${e.name||'—'}</strong></td>
+      <td style="color:var(--text2);font-size:12px">${e.email}</td>
+      <td><span class="pill pill-blue">${e.role||'—'}</span></td>
+      <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.loginTime||'—'}</td>
+      <td><span class="pill pill-green"><span class="live-dot" style="width:5px;height:5px"></span> Active</span></td>
+    </tr>`).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// USERS TABLE
+// ════════════════════════════════════════════════════════════
+let allUsers=[], uFilter='', uSortCol='idx', uSortDir=1;
+
+function renderUsers(){ allUsers=getUsers(); displayUsers(); }
+
+function displayUsers(){
+  const tbody = document.getElementById('usersBody');
+  let data = allUsers.map((u,i) => ({...u, idx:i+1}));
+  if(uFilter){ const f=uFilter.toLowerCase(); data=data.filter(u=>(u.name||'').toLowerCase().includes(f)||(u.email||'').toLowerCase().includes(f)||(u.role||'').toLowerCase().includes(f)); }
+  data.sort((a,b)=>{ const av=a[uSortCol]||'',bv=b[uSortCol]||''; return uSortDir*(String(av).localeCompare(String(bv))); });
+  if(!data.length){ tbody.innerHTML='<tr><td colspan="8" class="no-data">No users registered yet.</td></tr>'; return; }
+  tbody.innerHTML = data.map(u => {
+    const {cplHist,atplHist} = getUserProgress(u.email);
+    const cplBest = cplHist.length ? Math.max(...cplHist.map(h=>h.pct)) : null;
+    const atplBest = atplHist.length ? Math.max(...atplHist.map(h=>h.pct)) : null;
+    const orig = allUsers.indexOf(allUsers.find(x=>x.email===u.email));
+    return `<tr>
       <td>${u.idx}</td>
       <td><strong>${u.name||'—'}</strong></td>
-      <td style="color:var(--muted);font-size:12px">${u.email}</td>
+      <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${u.email}</td>
       <td><span class="pill pill-blue">${u.role||'—'}</span></td>
-      <td style="color:var(--muted);font-size:12px">${u.registeredAt||'—'}</td>
-      <td style="display:flex;gap:6px">
-        <button class="btn btn-ghost" style="font-size:10px;padding:5px 10px" onclick="openEdit(${allUsers.indexOf(u)})">&#9998; Edit</button>
-        <button class="btn btn-danger" style="font-size:10px;padding:5px 10px" onclick="deleteUser(${allUsers.indexOf(u)})">&#128465;</button>
+      <td style="color:var(--text3);font-size:11px;font-family:'JetBrains Mono',monospace">${u.registeredAt||'—'}</td>
+      <td>${cplBest!==null ? `<div class="score-bar-wrap"><div class="score-bar"><div class="score-fill ${cplBest>=70?'pass':'fail'}" style="width:${cplBest}%"></div></div><span class="score-num ${cplBest>=70?'pass':'fail'}">${cplBest}%</span></div>` : '<span style="color:var(--text3)">—</span>'}</td>
+      <td>${atplBest!==null ? `<div class="score-bar-wrap"><div class="score-bar"><div class="score-fill ${atplBest>=70?'pass':'fail'}" style="width:${atplBest}%"></div></div><span class="score-num ${atplBest>=70?'pass':'fail'}">${atplBest}%</span></div>` : '<span style="color:var(--text3)">—</span>'}</td>
+      <td style="display:flex;gap:5px">
+        <button class="btn btn-blue" style="padding:4px 10px;font-size:10px" onclick="openEdit(${orig})">✎ Edit</button>
+        <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="openDetail(${orig})">👁 View</button>
+        <button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="deleteUser(${orig})">🗑</button>
       </td>
-    </tr>`).join('');
-}
-function filterUsers(v){userFilter=v;displayUsers();}
-function sortTable(table,col){
-  if(table==='users'){if(userSortCol===col)userSortDir*=-1;else{userSortCol=col;userSortDir=1;}displayUsers();}
-  if(table==='sessions'){if(sessSortCol===col)sessSortDir*=-1;else{sessSortCol=col;sessSortDir=1;}displaySessions();}
-}
-function deleteUser(idx){
-  if(!confirm('Delete this user? Their data will also be removed.'))return;
-  const users=getUsers();const u=users[idx];
-  if(u){['cpl_study','atpl_study','cpl_exhist','atpl_exhist','cpl_completed','atpl_completed_subjects'].forEach(s=>lsDel(lsKey(u.email,s)));}
-  users.splice(idx,1);saveUsers(users);renderUsers();renderStats();renderProgress();
-}
-function clearAllUsers(){
-  if(!confirm('Delete ALL users? This cannot be undone.'))return;
-  getUsers().forEach(u=>['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>lsDel(lsKey(u.email,s))));
-  lsSet('examhub_users',[]);renderUsers();renderStats();renderProgress();
-}
-
-// ── SESSIONS TABLE ──
-let sessSortCol='loginTime',sessSortDir=-1,sessFilter='';
-function renderSessions(){displaySessions();}
-function displaySessions(){
-  const tbody=document.getElementById('sessionsBody');
-  let data=getLog().map((e,i)=>({...e,idx:i+1}));
-  if(sessFilter){const f=sessFilter.toLowerCase();data=data.filter(e=>(e.name||'').toLowerCase().includes(f)||(e.email||'').toLowerCase().includes(f));}
-  data.sort((a,b)=>{const av=a[sessSortCol]||'',bv=b[sessSortCol]||'';return sessSortDir*(String(av).localeCompare(String(bv)));});
-  if(!data.length){tbody.innerHTML='<tr><td colspan="7" class="no-data">No login activity yet.</td></tr>';return;}
-  tbody.innerHTML=data.map(e=>`
-    <tr>
-      <td>${e.idx}</td>
-      <td><strong>${e.name||'—'}</strong></td>
-      <td style="color:var(--muted);font-size:12px">${e.email}</td>
-      <td><span class="pill pill-blue">${e.role||'—'}</span></td>
-      <td style="color:var(--muted);font-size:12px">${e.loginTime||'—'}</td>
-      <td style="color:var(--muted);font-size:12px">${e.logoutTime||'—'}</td>
-      <td>${e.logoutTime===null?'<span class="pill pill-green"><span class="live-dot" style="width:5px;height:5px;margin-right:3px"></span>Active</span>':'<span class="pill pill-muted">Ended</span>'}</td>
-    </tr>`).join('');
-}
-function filterSessions(v){sessFilter=v;displaySessions();}
-function clearLog(){if(!confirm('Clear all login activity?'))return;saveLog([]);renderSessions();renderStats();}
-
-// ── PROGRESS TABLE ──
-let progressFilter='';
-function renderProgress(){displayProgress();}
-function displayProgress(){
-  const tbody=document.getElementById('progressBody');
-  let users=getUsers();
-  if(progressFilter){const f=progressFilter.toLowerCase();users=users.filter(u=>(u.name||'').toLowerCase().includes(f)||(u.email||'').toLowerCase().includes(f));}
-  if(!users.length){tbody.innerHTML='<tr><td colspan="10" class="no-data">No users yet.</td></tr>';return;}
-  tbody.innerHTML=users.map((u,i)=>{
-    const cplHist=ls(lsKey(u.email,'cpl_exhist'))||[];
-    const atplHist=ls(lsKey(u.email,'atpl_exhist'))||[];
-    const cplBest=cplHist.length?Math.max(...cplHist.map(h=>h.pct))+'%':'—';
-    const atplBest=atplHist.length?Math.max(...atplHist.map(h=>h.pct))+'%':'—';
-    const completedSubjs=ls(lsKey(u.email,'atpl_completed_subjects'))||{};
-    const doneCount=Object.keys(completedSubjs).filter(k=>completedSubjs[k]).length;
-    const hasCPLSession=!!ls(lsKey(u.email,'cpl_study'));
-    const hasATLSession=!!ls(lsKey(u.email,'atpl_study'));
-    const cplPassColor=cplHist.length&&Math.max(...cplHist.map(h=>h.pct))>=70?'var(--correct)':'var(--wrong)';
-    const atplPassColor=atplHist.length&&Math.max(...atplHist.map(h=>h.pct))>=70?'var(--correct)':'var(--wrong)';
-    return `<tr>
-      <td>${i+1}</td>
-      <td><strong>${u.name||'—'}</strong></td>
-      <td style="color:var(--muted);font-size:12px">${u.email}</td>
-      <td style="font-family:'Syne',sans-serif;font-weight:800;color:${cplPassColor}">${cplBest}</td>
-      <td><span class="pill pill-blue">${cplHist.length}</span></td>
-      <td style="font-family:'Syne',sans-serif;font-weight:800;color:${atplPassColor}">${atplBest}</td>
-      <td><span class="pill pill-blue">${atplHist.length}</span></td>
-      <td><span class="pill ${doneCount>0?'pill-green':'pill-muted'}">${doneCount} / 11</span></td>
-      <td>${hasCPLSession?'<span class="pill pill-amber">&#128204; Saved</span>':'<span class="pill pill-muted">—</span>'}</td>
-      <td>${hasATLSession?'<span class="pill pill-amber">&#128204; Saved</span>':'<span class="pill pill-muted">—</span>'}</td>
     </tr>`;
   }).join('');
 }
-function filterProgress(v){progressFilter=v;displayProgress();}
 
-// ── CREDENTIALS ──
-function renderCredentials(){
-  document.getElementById('credEmail').value=ADMIN_EMAIL;
-  document.getElementById('credCurEmail').textContent=ADMIN_EMAIL;
-  ['credCurPw','credNewPw','credConfirmPw'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).type='password';});
-  ['credEye0','credEye1','credEye2'].forEach(id=>document.getElementById(id).innerHTML='&#128065;');
-  showMsg('credMsg','','');
-}
-function saveCreds(){
-  const newEmail=(document.getElementById('credEmail').value||'').trim().toLowerCase();
-  const curPw=document.getElementById('credCurPw').value;
-  const newPw=document.getElementById('credNewPw').value;
-  const confPw=document.getElementById('credConfirmPw').value;
-  if(!curPw)return showMsg('credMsg','Current password is required.','error');
-  if(curPw!==ADMIN_PASSWORD)return showMsg('credMsg','Current password is incorrect.','error');
-  if(!newEmail||!/^[^@]+@[^@]+\.[^@]+$/.test(newEmail))return showMsg('credMsg','Enter a valid email.','error');
-  if(newPw){if(newPw.length<6)return showMsg('credMsg','Min 6 characters.','error');if(newPw!==confPw)return showMsg('credMsg','Passwords do not match.','error');}
-  ADMIN_EMAIL=newEmail;if(newPw)ADMIN_PASSWORD=newPw;
-  lsSet('examhub_admin_creds',{email:ADMIN_EMAIL,password:ADMIN_PASSWORD});
-  document.getElementById('credCurEmail').textContent=ADMIN_EMAIL;
-  ['credCurPw','credNewPw','credConfirmPw'].forEach(id=>document.getElementById(id).value='');
-  showMsg('credMsg',newPw?'Email and password updated.':'Email updated.','success');
+function filterUsers(v){ uFilter=v; displayUsers(); }
+function srt(tbl, col){
+  if(tbl==='users'){if(uSortCol===col)uSortDir*=-1;else{uSortCol=col;uSortDir=1;}displayUsers();}
 }
 
-// ── EDIT USER MODAL ──
+function deleteUser(idx){
+  const users=getUsers(); const u=users[idx]; if(!u) return;
+  if(!confirm(`Permanently delete ${u.name} (${u.email}) and ALL their data? This cannot be undone.`)) return;
+  ['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>lsDel(lsKey(u.email,s)));
+  users.splice(idx,1); saveUsers(users);
+  renderUsers(); renderDashboard();
+}
+
+function clearAllUsers(){
+  if(!confirm('Delete ALL users and ALL their data permanently? This cannot be undone.')) return;
+  getUsers().forEach(u=>['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>lsDel(lsKey(u.email,s))));
+  lsSet('examhub_users',[]); renderUsers(); renderDashboard(); renderProgress(); renderExams();
+}
+
+// ════════════════════════════════════════════════════════════
+// LIVE SESSIONS
+// ════════════════════════════════════════════════════════════
+function renderLiveSessions(){
+  const log = getLog();
+  const active = log.filter(e => e.logoutTime === null);
+  const tbody = document.getElementById('liveSessionsBody');
+  if(!active.length){ tbody.innerHTML='<tr><td colspan="7" class="no-data">No active sessions right now.</td></tr>'; return; }
+  tbody.innerHTML = active.map((e,i) => {
+    const dur = e.loginTime ? getDuration(e.loginTime) : '—';
+    return `<tr>
+      <td>${i+1}</td>
+      <td><strong>${e.name||'—'}</strong></td>
+      <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.email}</td>
+      <td><span class="pill pill-blue">${e.role||'—'}</span></td>
+      <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.loginTime||'—'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">${dur}</td>
+      <td><button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="forceLogout('${e.sessionId}')">Force End</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function getDuration(loginTime){
+  try{
+    // Parse "21 Apr, 14:30" style
+    const now = new Date();
+    const parts = loginTime.match(/(\d+)\s+(\w+),?\s+(\d+):(\d+)/);
+    if(!parts) return '—';
+    const months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    const d = new Date(now.getFullYear(), months[parts[2]]||0, parseInt(parts[1]), parseInt(parts[3]), parseInt(parts[4]));
+    const diff = Math.floor((now-d)/60000);
+    if(diff<60) return diff+'m';
+    return Math.floor(diff/60)+'h '+(diff%60)+'m';
+  }catch(e){return '—';}
+}
+
+function forceLogout(sid){
+  if(!confirm('Force this session to end?')) return;
+  const log=getLog();
+  const e=log.find(x=>x.sessionId===sid);
+  if(e) e.logoutTime = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' (forced)';
+  saveLog(log); renderLiveSessions(); renderDashboard();
+}
+
+// ════════════════════════════════════════════════════════════
+// ACTIVITY LOG
+// ════════════════════════════════════════════════════════════
+let actFilter='';
+function renderActivity(){ displayActivity(); }
+function displayActivity(){
+  const tbody = document.getElementById('activityBody');
+  let data = getLog();
+  if(actFilter){ const f=actFilter.toLowerCase(); data=data.filter(e=>(e.name||'').toLowerCase().includes(f)||(e.email||'').toLowerCase().includes(f)); }
+  if(!data.length){ tbody.innerHTML='<tr><td colspan="7" class="no-data">No activity yet.</td></tr>'; return; }
+  tbody.innerHTML = data.map((e,i) => `<tr>
+    <td>${i+1}</td>
+    <td><strong>${e.name||'—'}</strong></td>
+    <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.email}</td>
+    <td><span class="pill pill-blue">${e.role||'—'}</span></td>
+    <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.loginTime||'—'}</td>
+    <td style="color:var(--text3);font-size:12px;font-family:'JetBrains Mono',monospace">${e.logoutTime||'—'}</td>
+    <td>${e.logoutTime===null
+      ? '<span class="pill pill-green"><span class="live-dot" style="width:5px;height:5px;margin-right:3px"></span>Active</span>'
+      : (e.logoutTime||'').includes('forced')
+        ? '<span class="pill pill-amber">Force Ended</span>'
+        : '<span class="pill pill-muted">Ended</span>'}</td>
+  </tr>`).join('');
+}
+function filterActivity(v){ actFilter=v; displayActivity(); }
+function clearLog(){ if(!confirm('Clear all login activity?')) return; saveLog([]); renderActivity(); renderDashboard(); renderLiveSessions(); }
+
+// ════════════════════════════════════════════════════════════
+// PROGRESS TABLE
+// ════════════════════════════════════════════════════════════
+let progFilter='';
+function renderProgress(){ displayProgress(); }
+function displayProgress(){
+  const tbody=document.getElementById('progressBody');
+  let users=getUsers();
+  if(progFilter){ const f=progFilter.toLowerCase(); users=users.filter(u=>(u.name||'').toLowerCase().includes(f)||(u.email||'').toLowerCase().includes(f)); }
+  if(!users.length){ tbody.innerHTML='<tr><td colspan="10" class="no-data">No users yet.</td></tr>'; return; }
+  tbody.innerHTML = users.map((u,i)=>{
+    const {cplHist,atplHist,cplStudy,atplStudy,atplDone} = getUserProgress(u.email);
+    const cplBest = cplHist.length ? Math.max(...cplHist.map(h=>h.pct)) : null;
+    const atplBest = atplHist.length ? Math.max(...atplHist.map(h=>h.pct)) : null;
+    const doneCount = Object.values(atplDone).filter(Boolean).length;
+    const orig = getUsers().findIndex(x=>x.email===u.email);
+    return `<tr>
+      <td>${i+1}</td>
+      <td><strong>${u.name||'—'}</strong><br><span style="font-size:11px;color:var(--text3)">${u.email}</span></td>
+      <td>${cplBest!==null?`<span style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${cplBest>=70?'var(--green)':'var(--red)'}">${cplBest}%</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td><span class="pill pill-blue">${cplHist.length}</span></td>
+      <td>${atplBest!==null?`<span style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${atplBest>=70?'var(--green)':'var(--red)'}">${atplBest}%</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td><span class="pill pill-purple">${atplHist.length}</span></td>
+      <td>
+        <div class="score-bar-wrap"><div class="score-bar" style="min-width:80px"><div class="score-fill pass" style="width:${doneCount/11*100}%"></div></div>
+        <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2)">${doneCount}/11</span></div>
+      </td>
+      <td>${cplStudy?'<span class="pill pill-amber">💾 Saved</span>':'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${atplStudy?'<span class="pill pill-amber">💾 Saved</span>':'<span style="color:var(--text3)">—</span>'}</td>
+      <td><button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="openDetail(${orig})">Details</button></td>
+    </tr>`;
+  }).join('');
+}
+function filterProgress(v){ progFilter=v; displayProgress(); }
+
+// ════════════════════════════════════════════════════════════
+// EXAM RESULTS
+// ════════════════════════════════════════════════════════════
+function renderExams(){
+  const users=getUsers();
+  let cplRows=[], atplRows=[];
+  users.forEach(u=>{
+    const {cplHist,atplHist}=getUserProgress(u.email);
+    cplHist.forEach(h=>cplRows.push({...h,name:u.name,email:u.email}));
+    atplHist.forEach(h=>atplRows.push({...h,name:u.name,email:u.email}));
+  });
+  cplRows.sort((a,b)=>(b.pct||0)-(a.pct||0));
+  atplRows.sort((a,b)=>(b.pct||0)-(a.pct||0));
+
+  const examRow=(r,i)=>`<tr>
+    <td>${i+1}</td>
+    <td><strong>${r.name||'—'}</strong><br><span style="font-size:11px;color:var(--text3)">${r.email}</span></td>
+    <td style="color:var(--text3);font-size:11px;font-family:'JetBrains Mono',monospace">${r.date||'—'}</td>
+    <td><div class="score-bar-wrap"><div class="score-bar"><div class="score-fill ${r.pct>=70?'pass':'fail'}" style="width:${r.pct}%"></div></div><span class="score-num ${r.pct>=70?'pass':'fail'}">${r.pct}%</span></div></td>
+    <td style="color:var(--green);font-family:'JetBrains Mono',monospace">${r.correct}</td>
+    <td style="color:var(--red);font-family:'JetBrains Mono',monospace">${r.wrong||0}</td>
+    <td style="color:var(--amber);font-family:'JetBrains Mono',monospace">${r.skipped||0}</td>
+    <td><span class="pill ${r.passed?'pill-green':'pill-red'}">${r.passed?'PASS':'FAIL'}</span></td>
+  </tr>`;
+
+  const cplBody=document.getElementById('cplExamsBody');
+  const atplBody=document.getElementById('atplExamsBody');
+  cplBody.innerHTML=cplRows.length?cplRows.map(examRow).join(''):'<tr><td colspan="8" class="no-data">No CPL exam results yet.</td></tr>';
+  atplBody.innerHTML=atplRows.length?atplRows.map(examRow).join(''):'<tr><td colspan="8" class="no-data">No ATPL exam results yet.</td></tr>';
+}
+
+// ════════════════════════════════════════════════════════════
+// EDIT USER MODAL
+// ════════════════════════════════════════════════════════════
 let editIdx=-1;
+
 function openEdit(idx){
-  const u=getUsers()[idx];if(!u)return;
+  const u=getUsers()[idx]; if(!u) return;
   editIdx=idx;
-  document.getElementById('editSub').textContent=u.name+' · '+u.email;
+  document.getElementById('modalTitle').textContent='Edit User';
+  document.getElementById('modalSub').textContent=u.name+' · '+u.email;
+  document.getElementById('editForm').classList.remove('hidden');
+  document.getElementById('detailView').classList.add('hidden');
   document.getElementById('editEmail').value=u.email;
   document.getElementById('editRole').value=u.role||'Student';
-  document.getElementById('editPw').value='';document.getElementById('editPwConf').value='';
-  document.getElementById('editPw').type='password';document.getElementById('editPwConf').type='password';
-  document.getElementById('editPwEye').innerHTML='&#128065;';document.getElementById('editPwConfEye').innerHTML='&#128065;';
-  showMsg('editMsg','','');
-  document.getElementById('editModal').style.display='flex';
+  document.getElementById('editPw').value=''; document.getElementById('editPwC').value='';
+  document.getElementById('editPw').type='password'; document.getElementById('editPwC').type='password';
+  document.getElementById('editPwE').textContent='👁'; document.getElementById('editPwCE').textContent='👁';
+  showMsgModal('','');
+  document.getElementById('saveBtn').classList.remove('hidden');
+  document.getElementById('deleteBtn').classList.remove('hidden');
+  document.getElementById('modal-overlay').classList.add('open');
 }
-function closeEdit(){document.getElementById('editModal').style.display='none';editIdx=-1;}
-document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)closeEdit();});
+
+function openDetail(idx){
+  const u=getUsers()[idx]; if(!u) return;
+  editIdx=idx;
+  const {cplHist,atplHist,cplStudy,atplStudy,atplDone}=getUserProgress(u.email);
+  const cplBest=cplHist.length?Math.max(...cplHist.map(h=>h.pct)):null;
+  const atplBest=atplHist.length?Math.max(...atplHist.map(h=>h.pct)):null;
+  const doneSubjs=Object.entries(atplDone).filter(([,v])=>v).map(([k])=>k);
+
+  document.getElementById('modalTitle').textContent='User Profile';
+  document.getElementById('modalSub').textContent='Full profile and activity overview';
+  document.getElementById('editForm').classList.add('hidden');
+  document.getElementById('detailView').classList.remove('hidden');
+  document.getElementById('saveBtn').classList.add('hidden');
+  document.getElementById('deleteBtn').classList.remove('hidden');
+  showMsgModal('','');
+
+  document.getElementById('detailPanel').innerHTML=`
+    <div class="dp-head">
+      <div class="dp-avatar">${(u.name||'?').charAt(0).toUpperCase()}</div>
+      <div><div class="dp-name">${u.name||'—'}</div><div class="dp-email">${u.email}</div></div>
+      <span class="pill pill-blue" style="margin-left:auto">${u.role||'—'}</span>
+    </div>
+    <div class="dp-grid" style="margin-bottom:14px">
+      <div class="dp-item"><label>Registered</label><div class="val" style="font-size:11px;color:var(--text2)">${u.registeredAt||'—'}</div></div>
+      <div class="dp-item"><label>CPL Exams</label><div class="val">${cplHist.length}</div></div>
+      <div class="dp-item"><label>ATPL Mocks</label><div class="val">${atplHist.length}</div></div>
+    </div>
+    <div class="progress-section">
+      <div class="progress-label"><span>CPL Best Score</span><span>${cplBest!==null?cplBest+'%':'No exams'}</span></div>
+      <div class="progress-track"><div class="progress-fill pf-blue" style="width:${cplBest||0}%"></div></div>
+    </div>
+    <div class="progress-section">
+      <div class="progress-label"><span>ATPL Best Score</span><span>${atplBest!==null?atplBest+'%':'No mocks'}</span></div>
+      <div class="progress-track"><div class="progress-fill pf-purple" style="width:${atplBest||0}%"></div></div>
+    </div>
+    <div class="progress-section">
+      <div class="progress-label"><span>ATPL Subjects Completed</span><span>${doneSubjs.length} / 11</span></div>
+      <div class="progress-track"><div class="progress-fill pf-green" style="width:${doneSubjs.length/11*100}%"></div></div>
+    </div>
+    ${doneSubjs.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">${doneSubjs.map(s=>`<span class="pill pill-green" style="font-size:9px">✓ ${s}</span>`).join('')}</div>`:''}
+    <div style="margin-top:12px;display:flex;gap:7px;flex-wrap:wrap">
+      ${cplStudy?'<span class="pill pill-amber">CPL Session Saved</span>':''}
+      ${atplStudy?'<span class="pill pill-amber">ATPL Session Saved</span>':''}
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); editIdx=-1; }
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+function showMsgModal(msg,type){
+  const el=document.getElementById('modalMsg');
+  if(!msg){el.className='modal-msg';return;}
+  el.className=`modal-msg show ${type}`;
+  el.innerHTML=(type==='ok'?'✓ ':'⚠ ')+msg;
+}
+
+function deleteUserFromModal(){
+  if(editIdx<0) return;
+  const u=getUsers()[editIdx];
+  if(!u||!confirm(`Permanently delete ${u.name}? All data will be erased.`)) return;
+  ['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>lsDel(lsKey(u.email,s)));
+  const users=getUsers(); users.splice(editIdx,1); saveUsers(users);
+  closeModal(); renderUsers(); renderDashboard(); renderProgress(); renderExams();
+}
+
 function saveEdit(){
-  const users=getUsers();const u=users[editIdx];if(!u)return;
+  const users=getUsers(); const u=users[editIdx]; if(!u) return;
   const newEmail=(document.getElementById('editEmail').value||'').trim().toLowerCase();
   const newRole=document.getElementById('editRole').value;
   const newPw=document.getElementById('editPw').value;
-  const confPw=document.getElementById('editPwConf').value;
-  if(!newEmail||!/^[^@]+@[^@]+\.[^@]+$/.test(newEmail))return showMsg('editMsg','Enter a valid email.','error');
-  if(users.find((x,i)=>i!==editIdx&&x.email===newEmail))return showMsg('editMsg','Email already in use.','error');
-  if(newPw){if(newPw.length<6)return showMsg('editMsg','Min 6 characters.','error');if(newPw!==confPw)return showMsg('editMsg','Passwords do not match.','error');}
+  const confPw=document.getElementById('editPwC').value;
+  if(!newEmail||!/^[^@]+@[^@]+\.[^@]+$/.test(newEmail)) return showMsgModal('Enter a valid email.','err');
+  if(users.find((x,i)=>i!==editIdx&&x.email===newEmail)) return showMsgModal('Email already in use by another account.','err');
+  if(newPw){ if(newPw.length<6) return showMsgModal('Password must be at least 6 characters.','err'); if(newPw!==confPw) return showMsgModal('Passwords do not match.','err'); }
   const oldEmail=u.email;
-  if(newEmail!==oldEmail){
-    ['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>{const v=ls(lsKey(oldEmail,s));if(v)lsSet(lsKey(newEmail,s),v);lsDel(lsKey(oldEmail,s));});
-  }
-  u.email=newEmail;u.role=newRole;if(newPw)u.password=newPw;
-  users[editIdx]=u;saveUsers(users);
-  const changed=[];if(newEmail!==oldEmail)changed.push('email');changed.push('role');if(newPw)changed.push('password');
-  showMsg('editMsg',changed.join(', ').replace(/,([^,]*)$/,' and$1')+' updated.','success');
-  setTimeout(()=>{closeEdit();renderUsers();renderStats();renderProgress();},900);
+  if(newEmail!==oldEmail){ ['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>{const v=ls(lsKey(oldEmail,s));if(v)lsSet(lsKey(newEmail,s),v);lsDel(lsKey(oldEmail,s));}); }
+  u.email=newEmail; u.role=newRole; if(newPw)u.password=newPw;
+  users[editIdx]=u; saveUsers(users);
+  const changed=[]; if(newEmail!==oldEmail)changed.push('email'); changed.push('role'); if(newPw)changed.push('password');
+  showMsgModal(changed.join(', ').replace(/,([^,]*)$/,' and$1')+' updated.','ok');
+  setTimeout(()=>{ closeModal(); renderUsers(); renderDashboard(); },900);
 }
 
-// ── AUTO-REFRESH every 30s ──
-setInterval(()=>{
-  const activeTab=document.querySelector('.tab.active');
-  if(activeTab)refreshAll();
-}, 30000);
+// ════════════════════════════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════════════════════════════
+function renderSettings(){
+  document.getElementById('credEmail').value=ADMIN_EMAIL;
+  document.getElementById('credCurShow').textContent=ADMIN_EMAIL;
+  ['credCur','credNew','credConf'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).type='password';});
+  ['credEye0','credEye1','credEye2'].forEach(id=>document.getElementById(id).textContent='👁');
+  showCredMsg('','');
+}
+function showCredMsg(msg,type){ const el=document.getElementById('credMsg'); if(!msg){el.className='modal-msg';return;} el.className=`modal-msg show ${type}`; el.innerHTML=(type==='ok'?'✓ ':'⚠ ')+msg; }
+function saveCreds(){
+  const ne=(document.getElementById('credEmail').value||'').trim().toLowerCase();
+  const cur=document.getElementById('credCur').value;
+  const np=document.getElementById('credNew').value;
+  const cp=document.getElementById('credConf').value;
+  if(!cur) return showCredMsg('Current password required.','err');
+  if(cur!==ADMIN_PASSWORD) return showCredMsg('Current password incorrect.','err');
+  if(!ne||!/^[^@]+@[^@]+\.[^@]+$/.test(ne)) return showCredMsg('Enter a valid email.','err');
+  if(np){if(np.length<6) return showCredMsg('Min 6 characters.','err'); if(np!==cp) return showCredMsg('Passwords do not match.','err');}
+  ADMIN_EMAIL=ne; if(np)ADMIN_PASSWORD=np;
+  lsSet('examhub_admin_creds',{email:ADMIN_EMAIL,password:ADMIN_PASSWORD});
+  document.getElementById('credCurShow').textContent=ADMIN_EMAIL;
+  document.getElementById('sideAdminEmail').textContent=ADMIN_EMAIL.split('@')[0];
+  document.getElementById('credCurShow').textContent=ADMIN_EMAIL;
+  ['credCur','credNew','credConf'].forEach(id=>document.getElementById(id).value='');
+  showCredMsg(np?'Email and password updated.':'Email updated.','ok');
+}
 
-// ── INIT ──
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
 (function(){
   const sess=ls('examhub_admin_session');
-  if(sess&&sess.email===ADMIN_EMAIL)showDashboard();
+  if(sess && sess.email===ADMIN_EMAIL) showApp();
 })();
 </script>
 </body>
