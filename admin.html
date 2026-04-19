@@ -3,1041 +3,950 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ExamHub — Admin</title>
+<title>ExamHub Admin — Control Center</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#050709;--s0:#090c10;--s1:#0d1117;--s2:#161b22;--s3:#1f2937;
-  --border:#21262d;--border2:#30363d;
-  --blue:#58a6ff;--blue-dim:rgba(88,166,255,.1);--blue-glow:rgba(88,166,255,.2);
-  --green:#3fb950;--green-dim:rgba(63,185,80,.1);
-  --amber:#d29922;--amber-dim:rgba(210,153,34,.1);
-  --red:#f85149;--red-dim:rgba(248,81,73,.1);
-  --purple:#bc8cff;--purple-dim:rgba(188,140,255,.1);
-  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --bg:#05070a;--s0:#080c10;--s1:#0d1117;--s2:#161b24;--s3:#1e2736;
+  --b0:#191f28;--b1:#21283a;--b2:#2d3a50;
+  --blue:#4d9de0;--blue2:#2563eb;--blue-g:rgba(77,157,224,.12);
+  --green:#3fb950;--green-g:rgba(63,185,80,.1);
+  --amber:#e3b341;--amber-g:rgba(227,179,65,.1);
+  --red:#f85149;--red-g:rgba(248,81,73,.1);
+  --purple:#bc8cff;--purple-g:rgba(188,140,255,.1);
+  --cyan:#39d0d8;--cyan-g:rgba(57,208,216,.1);
+  --text:#cdd9e5;--text2:#8b949e;--text3:#484f58;
   --accent:#f0a500;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;overflow:hidden;}
 
-/* Grid bg */
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(88,166,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(88,166,255,.03) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0;}
+/* Grid overlay */
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(rgba(77,157,224,.06) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;z-index:0;}
 
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 .hidden{display:none!important;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-@keyframes spin{to{transform:rotate(360deg);}}
-.anim{animation:fadeIn .3s ease both;}
+.anim{animation:fadeUp .28s ease both;}
 
 /* ── LOGIN ── */
-#loginScreen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
-#loginScreen::after{content:'';position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);width:500px;height:500px;background:radial-gradient(ellipse,rgba(88,166,255,.06) 0%,transparent 65%);pointer-events:none;border-radius:50%;}
-.login-card{position:relative;z-index:1;background:var(--s1);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:420px;padding:36px 32px;box-shadow:0 24px 64px rgba(0,0,0,.6);}
-.login-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:.15em;text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;gap:8px;}
-.login-eyebrow::before{content:'';width:24px;height:1px;background:var(--border2);}
-.login-h{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em;}
-.login-sub{font-size:13px;color:var(--text2);margin-bottom:26px;}
-.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
-.field label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);}
-.inp{background:var(--s0);border:1px solid var(--border);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;padding:11px 14px;border-radius:9px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%;}
-.inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-dim);}
-.pw-wrap{position:relative;}.pw-wrap .inp{padding-right:42px;}
-.pw-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;transition:color .15s;}
-.pw-btn:hover{color:var(--text);}
-.err-bar{display:none;background:var(--red-dim);border:1px solid rgba(248,81,73,.3);color:var(--red);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:13px;align-items:center;gap:7px;}
-.err-bar.show{display:flex;}
-.login-btn{width:100%;font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;padding:13px;border:none;border-radius:9px;cursor:pointer;background:linear-gradient(135deg,#1a4a8a,var(--blue));color:#fff;transition:all .2s;margin-top:3px;}
-.login-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
-.login-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.back-lnk{text-align:center;margin-top:14px;font-size:12px;color:var(--text3);}
-.back-lnk a{color:var(--blue);cursor:pointer;text-decoration:none;transition:opacity .15s;}
-.back-lnk a:hover{opacity:.7;}
+#loginScreen{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
+#loginScreen::after{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(ellipse,rgba(77,157,224,.08),transparent 65%);pointer-events:none;}
+.lcard{position:relative;z-index:1;background:var(--s1);border:1px solid var(--b1);border-radius:16px;width:100%;max-width:400px;padding:36px 32px;box-shadow:0 32px 80px rgba(0,0,0,.7);}
+.lcard-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.2em;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:10px;}
+.lcard-eyebrow::before{content:'';flex:1;height:1px;background:var(--b1);}
+.lcard-eyebrow::after{content:'';flex:1;height:1px;background:var(--b1);}
+.lcard h1{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px;}
+.lcard-sub{font-size:13px;color:var(--text2);margin-bottom:24px;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:13px;}
+.field label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.inp{background:var(--s0);border:1px solid var(--b1);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;padding:10px 13px;border-radius:9px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%;}
+.inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(77,157,224,.12);}
+.pw-row{position:relative;}.pw-row .inp{padding-right:40px;}
+.eye-btn{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;transition:color .15s;}
+.eye-btn:hover{color:var(--text);}
+.err-strip{display:none;background:var(--red-g);border:1px solid rgba(248,81,73,.25);color:var(--red);font-size:12px;padding:9px 13px;border-radius:8px;margin-bottom:13px;gap:7px;align-items:center;}
+.err-strip.show{display:flex;}
+.lbtn{width:100%;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;padding:12px;border:none;border-radius:9px;cursor:pointer;background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;transition:all .2s;margin-top:4px;}
+.lbtn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+.lbtn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.back-txt{text-align:center;margin-top:12px;font-size:12px;color:var(--text3);}
+.back-txt a{color:var(--blue);text-decoration:none;}
 
-/* ── LAYOUT ── */
-#app{display:none;min-height:100vh;}
-.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+/* ── SHELL ── */
+#app{display:none;height:100vh;display:grid;grid-template-rows:52px 1fr;}
+.topbar{background:var(--s0);border-bottom:1px solid var(--b0);display:flex;align-items:center;padding:0 20px;gap:14px;position:relative;z-index:50;}
+.tb-logo{display:flex;align-items:center;gap:8px;margin-right:8px;}
+.tb-badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;background:var(--accent);color:#000;padding:3px 7px;border-radius:4px;letter-spacing:.08em;}
+.tb-name{font-size:14px;font-weight:700;letter-spacing:-.01em;}
+.tb-divider{width:1px;height:22px;background:var(--b1);}
+.tb-nav{display:flex;gap:2px;flex:1;}
+.tn{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:7px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all .15s;border:1px solid transparent;white-space:nowrap;}
+.tn:hover{background:var(--s2);color:var(--text);}
+.tn.active{background:var(--blue-g);color:var(--blue);border-color:rgba(77,157,224,.15);}
+.tn-icon{font-size:13px;}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.sync-indicator{display:flex;align-items:center;gap:5px;font-size:11px;font-family:'JetBrains Mono',monospace;padding:5px 10px;border-radius:6px;border:1px solid var(--b1);}
+.sync-dot{width:6px;height:6px;border-radius:50%;}
+.sync-dot.live{background:var(--green);animation:pulse 2s infinite;}
+.sync-dot.syncing{background:var(--amber);animation:pulse .5s infinite;}
+.sync-dot.err{background:var(--red);}
+.admin-pill{display:flex;align-items:center;gap:7px;padding:5px 10px;border-radius:7px;background:var(--s2);border:1px solid var(--b1);}
+.admin-av{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,var(--blue2),var(--blue));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.admin-lbl{font-size:12px;font-weight:600;}
+.logout-mini{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(248,81,73,.2);border-radius:6px;background:transparent;color:var(--red);cursor:pointer;transition:all .15s;}
+.logout-mini:hover{background:var(--red);color:#fff;}
 
-/* ── SIDEBAR ── */
-.sidebar{background:var(--s0);border-right:1px solid var(--border);padding:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:10;}
-.sidebar-logo{padding:22px 20px 18px;border-bottom:1px solid var(--border);}
-.logo-pill{display:inline-flex;align-items:center;gap:8px;}
-.logo-badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;background:var(--accent);color:#000;padding:3px 8px;border-radius:4px;letter-spacing:.1em;text-transform:uppercase;}
-.logo-name{font-size:15px;font-weight:700;letter-spacing:-.01em;}
-.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto;}
-.nav-section{padding:0 12px;margin-bottom:4px;}
-.nav-section-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:10px 8px 6px;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;color:var(--text2);transition:all .15s;font-size:13px;font-weight:500;border:1px solid transparent;text-decoration:none;margin-bottom:1px;}
-.nav-item:hover{background:var(--s2);color:var(--text);}
-.nav-item.active{background:var(--blue-dim);color:var(--blue);border-color:rgba(88,166,255,.15);}
-.nav-icon{width:16px;text-align:center;font-size:14px;flex-shrink:0;}
-.sidebar-footer{padding:14px 12px;border-top:1px solid var(--border);}
-.admin-info{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--s2);}
-.admin-avatar{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#1a4a8a,var(--blue));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
-.admin-name{font-size:12px;font-weight:600;color:var(--text);}
-.admin-role{font-size:10px;color:var(--text3);}
-.sidebar-logout{width:100%;margin-top:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:9px;border:1px solid rgba(248,81,73,.25);border-radius:8px;background:rgba(248,81,73,.06);color:var(--red);cursor:pointer;transition:all .18s;}
-.sidebar-logout:hover{background:var(--red);color:#fff;}
+.body-area{display:grid;grid-template-columns:200px 1fr;overflow:hidden;}
+.sidebar{background:var(--s0);border-right:1px solid var(--b0);overflow-y:auto;padding:14px 10px;}
+.snav-lbl{font-size:9px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--text3);padding:10px 8px 5px;}
+.snav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all .13s;border:1px solid transparent;margin-bottom:1px;text-decoration:none;}
+.snav-item:hover{background:var(--s2);color:var(--text);}
+.snav-item.active{background:var(--blue-g);color:var(--blue);border-color:rgba(77,157,224,.12);}
+.snav-icon{font-size:13px;width:18px;text-align:center;}
+.main-area{overflow-y:auto;padding:24px 28px;position:relative;z-index:1;}
 
-/* ── MAIN ── */
-.main{background:var(--bg);padding:28px 32px;overflow-y:auto;position:relative;z-index:1;}
-.page-header{margin-bottom:28px;}
-.page-title{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px;}
-.page-sub{font-size:13px;color:var(--text2);}
-.live-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--green);background:var(--green-dim);border:1px solid rgba(63,185,80,.2);padding:3px 9px;border-radius:99px;margin-left:10px;vertical-align:middle;}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;}
+/* ── STAT CARDS ── */
+.stat-row{display:grid;gap:12px;margin-bottom:20px;}
+.stat-row.cols4{grid-template-columns:repeat(4,1fr);}
+.stat-row.cols3{grid-template-columns:repeat(3,1fr);}
+.stat-row.cols2{grid-template-columns:repeat(2,1fr);}
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:border-color .15s;}
+.stat-card:hover{border-color:var(--b2);}
+.sc-glow{position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.15;}
+.sc-blue .sc-glow{background:var(--blue);}
+.sc-green .sc-glow{background:var(--green);}
+.sc-amber .sc-glow{background:var(--amber);}
+.sc-red .sc-glow{background:var(--red);}
+.sc-purple .sc-glow{background:var(--purple);}
+.sc-cyan .sc-glow{background:var(--cyan);}
+.sc-icon{font-size:18px;margin-bottom:10px;}
+.sc-val{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:600;line-height:1;margin-bottom:4px;}
+.sc-blue .sc-val{color:var(--blue);}
+.sc-green .sc-val{color:var(--green);}
+.sc-amber .sc-val{color:var(--amber);}
+.sc-red .sc-val{color:var(--red);}
+.sc-purple .sc-val{color:var(--purple);}
+.sc-cyan .sc-val{color:var(--cyan);}
+.sc-label{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.08em;}
+.sc-sub{font-size:11px;color:var(--text3);margin-top:6px;font-family:'JetBrains Mono',monospace;}
 
-/* ── STATS ROW ── */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-.stat-box{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden;}
-.stat-box::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;transform:translate(30px,-30px);opacity:.12;}
-.stat-box.blue::after{background:var(--blue);}
-.stat-box.green::after{background:var(--green);}
-.stat-box.amber::after{background:var(--amber);}
-.stat-box.red::after{background:var(--red);}
-.stat-box.purple::after{background:var(--purple);}
-.stat-icon{font-size:18px;margin-bottom:10px;}
-.stat-val{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;line-height:1;margin-bottom:4px;}
-.stat-val.blue{color:var(--blue);}
-.stat-val.green{color:var(--green);}
-.stat-val.amber{color:var(--amber);}
-.stat-val.red{color:var(--red);}
-.stat-val.purple{color:var(--purple);}
-.stat-label{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.08em;}
-.stat-delta{font-size:11px;margin-top:6px;font-family:'JetBrains Mono',monospace;}
-.stat-delta.up{color:var(--green);}
-.stat-delta.dn{color:var(--red);}
-
-/* ── CARD ── */
-.card{background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
-.card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
-.card-title{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:8px;}
-.card-actions{display:flex;gap:7px;align-items:center;}
-.search-box{background:var(--s0);border:1px solid var(--border);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;padding:6px 11px;border-radius:7px;outline:none;width:200px;transition:border-color .15s;}
-.search-box:focus{border-color:var(--blue);}
-.btn{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:6px 13px;border:none;border-radius:7px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2);}
-.btn-ghost:hover{border-color:var(--blue);color:var(--blue);}
-.btn-blue{background:var(--blue-dim);border:1px solid rgba(88,166,255,.25);color:var(--blue);}
-.btn-blue:hover{background:var(--blue);color:#fff;}
-.btn-red{background:var(--red-dim);border:1px solid rgba(248,81,73,.25);color:var(--red);}
-.btn-red:hover{background:var(--red);color:#fff;}
-.btn-green{background:var(--green-dim);border:1px solid rgba(63,185,80,.25);color:var(--green);}
-.btn-green:hover{background:var(--green);color:#000;}
-
-/* ── TABLE ── */
+/* ── TABLE CARD ── */
+.tcard{background:var(--s1);border:1px solid var(--b1);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.tcard-head{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--b0);}
+.tcard-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.tcard-actions{display:flex;gap:6px;align-items:center;}
+.search-input{background:var(--s0);border:1px solid var(--b1);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;padding:6px 10px;border-radius:7px;outline:none;width:180px;transition:border-color .15s;}
+.search-input:focus{border-color:var(--blue);}
+.btn{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border:none;border-radius:6px;cursor:pointer;transition:all .13s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+.btn-o{background:transparent;border:1px solid var(--b1);color:var(--text2);}
+.btn-o:hover{border-color:var(--blue);color:var(--blue);}
+.btn-b{background:var(--blue-g);border:1px solid rgba(77,157,224,.2);color:var(--blue);}
+.btn-b:hover{background:var(--blue);color:#fff;}
+.btn-r{background:var(--red-g);border:1px solid rgba(248,81,73,.2);color:var(--red);}
+.btn-r:hover{background:var(--red);color:#fff;}
+.btn-g{background:var(--green-g);border:1px solid rgba(63,185,80,.2);color:var(--green);}
+.btn-g:hover{background:var(--green);color:#000;}
+.btn-a{background:var(--amber-g);border:1px solid rgba(227,179,65,.2);color:var(--amber);}
+.btn-a:hover{background:var(--amber);color:#000;}
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
-thead th{padding:10px 16px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);text-align:left;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;}
+thead th{padding:9px 16px;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);text-align:left;border-bottom:1px solid var(--b0);cursor:pointer;white-space:nowrap;user-select:none;}
 thead th:first-child{padding-left:20px;}
 thead th:hover{color:var(--text2);}
 thead th.sorted{color:var(--blue);}
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr{border-bottom:1px solid var(--b0);transition:background .1s;}
 tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:rgba(255,255,255,.02);}
-td{padding:11px 16px;vertical-align:middle;}
-td:first-child{padding-left:20px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:11px;}
-.no-data{text-align:center;padding:36px;color:var(--text3);font-size:13px;}
-.loading-row{text-align:center;padding:24px;color:var(--text3);}
-.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px;}
+tbody tr:hover{background:rgba(255,255,255,.018);}
+td{padding:10px 16px;vertical-align:middle;}
+td:first-child{padding-left:20px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;}
+.no-data{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
+.loading-msg{text-align:center;padding:28px;color:var(--text3);display:flex;align-items:center;justify-content:center;gap:8px;}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite;}
 
 /* ── PILLS ── */
-.pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:99px;}
-.pill-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(88,166,255,.2);}
-.pill-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(63,185,80,.2);}
-.pill-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(210,153,34,.2);}
-.pill-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.2);}
-.pill-muted{background:rgba(72,79,88,.2);color:var(--text3);border:1px solid var(--border);}
-.pill-purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(188,140,255,.2);}
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:99px;}
+.p-blue{background:var(--blue-g);color:var(--blue);border:1px solid rgba(77,157,224,.2);}
+.p-green{background:var(--green-g);color:var(--green);border:1px solid rgba(63,185,80,.2);}
+.p-amber{background:var(--amber-g);color:var(--amber);border:1px solid rgba(227,179,65,.2);}
+.p-red{background:var(--red-g);color:var(--red);border:1px solid rgba(248,81,73,.2);}
+.p-muted{background:rgba(72,79,88,.15);color:var(--text3);border:1px solid var(--b1);}
+.p-purple{background:var(--purple-g);color:var(--purple);border:1px solid rgba(188,140,255,.2);}
+.p-cyan{background:var(--cyan-g);color:var(--cyan);border:1px solid rgba(57,208,216,.2);}
 
 /* ── SCORE BAR ── */
-.score-bar-wrap{display:flex;align-items:center;gap:8px;}
-.score-bar{flex:1;height:5px;background:var(--s3);border-radius:99px;overflow:hidden;min-width:60px;}
-.score-fill{height:100%;border-radius:99px;transition:width .5s ease;}
-.score-fill.pass{background:var(--green);}
-.score-fill.fail{background:var(--red);}
-.score-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;min-width:32px;}
-.score-num.pass{color:var(--green);}
-.score-num.fail{color:var(--red);}
+.sbar-row{display:flex;align-items:center;gap:7px;}
+.sbar{flex:1;height:4px;background:var(--s3);border-radius:99px;overflow:hidden;min-width:50px;}
+.sbar-fill{height:100%;border-radius:99px;transition:width .6s ease;}
+.sbar-fill.pass{background:linear-gradient(90deg,#15803d,var(--green));}
+.sbar-fill.fail{background:linear-gradient(90deg,#991b1b,var(--red));}
+.snum{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;min-width:30px;text-align:right;}
+.snum.pass{color:var(--green);}
+.snum.fail{color:var(--red);}
 
 /* ── MODAL ── */
-#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:20px;}
-#modal-overlay.open{display:flex;}
-.modal-box{background:var(--s1);border:1px solid var(--border2);border-radius:14px;width:100%;max-width:480px;padding:26px;box-shadow:0 32px 80px rgba(0,0,0,.6);animation:fadeIn .25s ease both;}
-.modal-title{font-size:17px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px;}
-.modal-sub{font-size:12px;color:var(--text2);margin-bottom:20px;}
-.modal-msg{display:none;font-size:12px;padding:9px 12px;border-radius:8px;margin-bottom:13px;align-items:center;gap:7px;}
-.modal-msg.show{display:flex;}
-.modal-msg.ok{background:var(--green-dim);border:1px solid rgba(63,185,80,.3);color:var(--green);}
-.modal-msg.err{background:var(--red-dim);border:1px solid rgba(248,81,73,.3);color:var(--red);}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
-.divider{height:1px;background:var(--border);margin:16px 0;}
-.sect-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+#modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:800;align-items:center;justify-content:center;padding:20px;}
+#modal-bg.open{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:14px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,.7);animation:fadeUp .22s ease both;}
+.modal-head{padding:20px 22px 16px;border-bottom:1px solid var(--b0);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:var(--s1);z-index:1;}
+.modal-title{font-size:16px;font-weight:700;letter-spacing:-.01em;}
+.modal-sub-txt{font-size:12px;color:var(--text2);margin-top:3px;}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:2px 6px;transition:color .12s;line-height:1;}
+.modal-close:hover{color:var(--red);}
+.modal-body{padding:20px 22px;}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--b0);display:flex;gap:8px;justify-content:flex-end;}
+.mbar{display:none;font-size:12px;padding:8px 12px;border-radius:7px;margin-bottom:13px;align-items:center;gap:6px;}
+.mbar.show{display:flex;}
+.mbar.ok{background:var(--green-g);border:1px solid rgba(63,185,80,.3);color:var(--green);}
+.mbar.err{background:var(--red-g);border:1px solid rgba(248,81,73,.3);color:var(--red);}
+.divider{height:1px;background:var(--b0);margin:14px 0;}
+.sect-lbl{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
 
-/* ── DETAIL PANEL ── */
-.detail-panel{background:var(--s0);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;}
-.dp-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
-.dp-avatar{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#1a4a8a,var(--blue));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;}
-.dp-name{font-size:16px;font-weight:700;margin-bottom:2px;}
-.dp-email{font-size:12px;color:var(--text2);}
-.dp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.dp-item label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:3px;}
-.dp-item .val{font-size:13px;font-weight:500;}
+/* ── USER PROFILE CARD ── */
+.profile-card{background:var(--s0);border:1px solid var(--b1);border-radius:10px;padding:16px;margin-bottom:14px;}
+.profile-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.profile-av{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,var(--blue2),var(--blue));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;}
+.profile-name{font-size:15px;font-weight:700;}
+.profile-email{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.pg-item label{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:3px;}
+.pg-item .val{font-size:13px;font-weight:500;}
+.progress-item{margin-bottom:10px;}
+.progress-lbl{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
+.progress-lbl span:first-child{color:var(--text2);}
+.progress-lbl span:last-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);}
+.progress-track{height:5px;background:var(--s3);border-radius:99px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:99px;}
+.pbf-blue{background:linear-gradient(90deg,var(--blue2),var(--blue));}
+.pbf-purple{background:linear-gradient(90deg,#6d28d9,var(--purple));}
+.pbf-green{background:linear-gradient(90deg,#15803d,var(--green));}
+.subj-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
 
-/* ── SYNC STATUS ── */
-.sync-bar{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3);padding:8px 0;}
-.sync-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.sync-dot.synced{background:var(--green);}
-.sync-dot.syncing{background:var(--amber);animation:pulse .8s infinite;}
-.sync-dot.offline{background:var(--red-dim);border:1px solid var(--red);}
+/* ── DEVICE TAG ── */
+.dtag{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:5px;background:var(--s2);border:1px solid var(--b1);color:var(--text2);font-family:'JetBrains Mono',monospace;}
 
-/* ── PROGRESS BARS ── */
-.progress-section{margin-bottom:16px;}
-.progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:12px;}
-.progress-label span:first-child{color:var(--text2);}
-.progress-label span:last-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);}
-.progress-track{height:6px;background:var(--s3);border-radius:99px;overflow:hidden;}
-.progress-fill{height:100%;border-radius:99px;}
-.pf-blue{background:linear-gradient(90deg,#1a4a8a,var(--blue));}
-.pf-purple{background:linear-gradient(90deg,#6d28d9,var(--purple));}
-.pf-green{background:linear-gradient(90deg,#15803d,var(--green));}
+/* ── ACTIVITY FEED ── */
+.ev-row{display:flex;align-items:flex-start;gap:10px;padding:9px 16px;border-bottom:1px solid var(--b0);}
+.ev-row:last-child{border-bottom:none;}
+.ev-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.ev-content{flex:1;min-width:0;}
+.ev-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ev-detail{font-size:11px;color:var(--text2);margin-top:1px;}
+.ev-time{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap;flex-shrink:0;}
 
-/* ── CREDS TAB ── */
-.creds-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-@media(max-width:900px){.stats-row{grid-template-columns:1fr 1fr;}.layout{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}.creds-grid{grid-template-columns:1fr;}}
+/* ── SETTINGS ── */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+@media(max-width:800px){.stat-row.cols4{grid-template-columns:1fr 1fr;}.settings-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- LOGIN SCREEN -->
 <div id="loginScreen">
-  <div class="login-card anim">
-    <div class="login-eyebrow">ExamHub Platform</div>
-    <div class="login-h">Admin Access</div>
-    <div class="login-sub">Restricted. Authorized personnel only.</div>
-    <div class="err-bar" id="loginErr"><span>⚠</span><span id="loginErrTxt"></span></div>
-    <div class="field"><label>Email</label><input class="inp" type="email" id="admEmail" placeholder="admin@examhub.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="field"><label>Password</label><div class="pw-wrap"><input class="inp" type="password" id="admPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"><button class="pw-btn" onclick="tpw('admPw','admEye')" id="admEye">👁</button></div></div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">🔐 Sign In</button>
-    <div class="back-lnk"><a href="ExamHub.html">← Back to Exam Hub</a></div>
+  <div class="lcard anim">
+    <div class="lcard-eyebrow">Admin Access Only</div>
+    <h1>ExamHub Control Center</h1>
+    <div class="lcard-sub">Real-time cross-device monitoring and management.</div>
+    <div class="err-strip" id="lErr"><span>⚠</span><span id="lErrTxt"></span></div>
+    <div class="field"><label>Email</label><input class="inp" type="email" id="aEmail" placeholder="admin@examhub.com" onkeydown="if(event.key==='Enter')doAdminLogin()"></div>
+    <div class="field"><label>Password</label><div class="pw-row"><input class="inp" type="password" id="aPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()"><button class="eye-btn" onclick="togglePw('aPw','aEye')" id="aEye">👁</button></div></div>
+    <button class="lbtn" id="lBtn" onclick="doAdminLogin()">🔐 Sign In</button>
+    <div class="back-txt"><a href="ExamHub.html">← Back to Exam Hub</a></div>
   </div>
 </div>
 
-<!-- APP -->
-<div id="app">
-<div class="layout">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-pill">
-        <div class="logo-badge">CAAN</div>
-        <div class="logo-name">Admin</div>
-      </div>
+<!-- APP SHELL -->
+<div id="app" style="display:none">
+  <div class="topbar">
+    <div class="tb-logo"><div class="tb-badge">CAAN</div><div class="tb-name">Admin</div></div>
+    <div class="tb-divider"></div>
+    <div class="tb-nav" id="topNav">
+      <div class="tn active" onclick="goTo('dashboard',this)"><span class="tn-icon">📊</span>Dashboard</div>
+      <div class="tn" onclick="goTo('users',this)"><span class="tn-icon">👥</span>Users</div>
+      <div class="tn" onclick="goTo('sessions',this)"><span class="tn-icon">🟢</span>Sessions</div>
+      <div class="tn" onclick="goTo('activity',this)"><span class="tn-icon">📋</span>Activity</div>
+      <div class="tn" onclick="goTo('progress',this)"><span class="tn-icon">📈</span>Progress</div>
+      <div class="tn" onclick="goTo('exams',this)"><span class="tn-icon">✈️</span>Exams</div>
+      <div class="tn" onclick="goTo('settings',this)"><span class="tn-icon">⚙️</span>Settings</div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-label">Overview</div>
-        <div class="nav-item active" onclick="navTo('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</div>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-label">Users</div>
-        <div class="nav-item" onclick="navTo('users',this)"><span class="nav-icon">👥</span> All Users</div>
-        <div class="nav-item" onclick="navTo('sessions',this)"><span class="nav-icon">🟢</span> Live Sessions</div>
-        <div class="nav-item" onclick="navTo('activity',this)"><span class="nav-icon">📋</span> Activity Log</div>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-label">Analytics</div>
-        <div class="nav-item" onclick="navTo('progress',this)"><span class="nav-icon">📈</span> Study Progress</div>
-        <div class="nav-item" onclick="navTo('exams',this)"><span class="nav-icon">✈️</span> Exam Results</div>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-label">Settings</div>
-        <div class="nav-item" onclick="navTo('settings',this)"><span class="nav-icon">⚙️</span> Credentials</div>
-      </div>
+    <div class="tb-right">
+      <div class="sync-indicator" id="syncInd"><div class="sync-dot live" id="syncDot"></div><span id="syncLbl">Live</span></div>
+      <div class="admin-pill"><div class="admin-av" id="adminAv">A</div><div class="admin-lbl" id="adminLbl">admin</div></div>
+      <button class="logout-mini" onclick="doAdminLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="body-area">
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="snav-lbl">Navigation</div>
+      <div class="snav-item active" onclick="goTo('dashboard',this)" id="snav-dashboard"><span class="snav-icon">📊</span>Dashboard</div>
+      <div class="snav-item" onclick="goTo('users',this)" id="snav-users"><span class="snav-icon">👥</span>All Users</div>
+      <div class="snav-item" onclick="goTo('sessions',this)" id="snav-sessions"><span class="snav-icon">🟢</span>Live Sessions</div>
+      <div class="snav-item" onclick="goTo('activity',this)" id="snav-activity"><span class="snav-icon">📋</span>Activity Log</div>
+      <div class="snav-lbl">Analytics</div>
+      <div class="snav-item" onclick="goTo('progress',this)" id="snav-progress"><span class="snav-icon">📈</span>Study Progress</div>
+      <div class="snav-item" onclick="goTo('exams',this)" id="snav-exams"><span class="snav-icon">✈️</span>Exam Results</div>
+      <div class="snav-lbl">Admin</div>
+      <div class="snav-item" onclick="goTo('settings',this)" id="snav-settings"><span class="snav-icon">⚙️</span>Credentials</div>
     </nav>
-    <div class="sidebar-footer">
-      <div class="admin-info">
-        <div class="admin-avatar" id="sideAdminAvatar">A</div>
-        <div><div class="admin-name" id="sideAdminEmail">admin</div><div class="admin-role">Administrator</div></div>
-      </div>
-      <button class="sidebar-logout" onclick="doLogout()">Sign Out</button>
-    </div>
-  </aside>
 
-  <!-- MAIN -->
-  <main class="main" id="mainContent">
+    <!-- MAIN -->
+    <div class="main-area" id="mainArea">
 
-    <!-- DASHBOARD PAGE -->
-    <div id="page-dashboard" class="anim">
-      <div class="page-header">
-        <div class="page-title">Dashboard <span class="live-badge"><span class="live-dot"></span>Live</span></div>
-        <div class="page-sub">Real-time overview of all ExamHub activity across all devices.</div>
+      <!-- DASHBOARD -->
+      <div id="pg-dashboard" class="anim">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div><div style="font-size:20px;font-weight:700;letter-spacing:-.02em">Dashboard <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--green);background:var(--green-g);border:1px solid rgba(63,185,80,.2);padding:3px 9px;border-radius:99px;vertical-align:middle"><span class="sync-dot live"></span>Real-time</span></div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px">Cross-device monitoring — all users, all networks</div></div>
+          <div style="display:flex;gap:7px"><button class="btn btn-o" onclick="refreshPage()">↻ Refresh</button><button class="btn btn-b" onclick="exportData()">⬇ Export CSV</button></div>
+        </div>
+        <div class="stat-row cols4" id="db-stats"></div>
+        <div class="stat-row cols3" id="db-stats2"></div>
+        <div class="tcard">
+          <div class="tcard-head"><div class="tcard-title"><span class="sync-dot live"></span> Active Sessions — All Devices</div><button class="btn btn-o" onclick="refreshPage()">↻</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>User</th><th>Email</th><th>Device</th><th>Browser/OS</th><th>Logged In</th><th>Duration</th><th>Action</th></tr></thead><tbody id="db-active-tbody"></tbody></table></div>
+        </div>
+        <div class="tcard">
+          <div class="tcard-head"><div class="tcard-title">📋 Recent Events</div></div>
+          <div id="db-events"></div>
+        </div>
       </div>
-      <div class="stats-row" id="dashStats">
-        <div class="stat-box blue"><div class="stat-icon">👥</div><div class="stat-val blue" id="ds-users">—</div><div class="stat-label">Total Users</div></div>
-        <div class="stat-box green"><div class="stat-icon">🟢</div><div class="stat-val green" id="ds-active">—</div><div class="stat-label">Active Now</div></div>
-        <div class="stat-box amber"><div class="stat-icon">📋</div><div class="stat-val amber" id="ds-logins">—</div><div class="stat-label">Total Logins</div></div>
-        <div class="stat-box purple"><div class="stat-icon">✈️</div><div class="stat-val purple" id="ds-exams">—</div><div class="stat-label">Exams Taken</div></div>
-      </div>
-      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
-        <div class="stat-box green"><div class="stat-icon">✅</div><div class="stat-val green" id="ds-pass">—</div><div class="stat-label">CPL Pass Rate</div></div>
-        <div class="stat-box blue"><div class="stat-icon">📚</div><div class="stat-val blue" id="ds-study">—</div><div class="stat-label">Study Sessions</div></div>
-        <div class="stat-box amber"><div class="stat-icon">🏆</div><div class="stat-val amber" id="ds-top">—</div><div class="stat-label">Top CPL Score</div></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title">🟢 Currently Active Sessions</div><button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button></div>
-        <div class="tbl-wrap"><table><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Logged In</th><th>Status</th></tr></thead><tbody id="activeSessionsBody"></tbody></table></div>
-      </div>
-    </div>
 
-    <!-- USERS PAGE -->
-    <div id="page-users" class="anim hidden">
-      <div class="page-header">
-        <div class="page-title">All Users</div>
-        <div class="page-sub">Complete user registry. Click a user to view full profile and manage their account.</div>
-      </div>
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">👥 Registered Users</div>
-          <div class="card-actions">
-            <input class="search-box" type="text" placeholder="Search name, email, role…" oninput="filterUsers(this.value)">
-            <button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button>
-            <button class="btn btn-red" onclick="clearAllUsers()">🗑 Delete All</button>
+      <!-- USERS -->
+      <div id="pg-users" class="anim hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div><div style="font-size:20px;font-weight:700">All Users</div><div style="font-size:12px;color:var(--text3);margin-top:3px">Complete registry across all devices and networks</div></div>
+          <div style="display:flex;gap:7px"><button class="btn btn-o" onclick="refreshPage()">↻ Refresh</button><button class="btn btn-r" onclick="clearAllUsers()">🗑 Delete All</button></div>
+        </div>
+        <div class="tcard">
+          <div class="tcard-head">
+            <div class="tcard-title">👥 Registered Users</div>
+            <div class="tcard-actions"><input class="search-input" type="text" placeholder="Search name, email, role…" oninput="filterUsers(this.value)" id="uSearch"><button class="btn btn-o" onclick="refreshPage()">↻</button></div>
           </div>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr>
-              <th onclick="srt('users','idx')">#</th>
-              <th onclick="srt('users','name')">Name ↕</th>
-              <th onclick="srt('users','email')">Email ↕</th>
-              <th onclick="srt('users','role')">Role ↕</th>
-              <th onclick="srt('users','registeredAt')">Registered ↕</th>
-              <th>CPL Best</th>
-              <th>ATPL Best</th>
-              <th>Actions</th>
-            </tr></thead>
-            <tbody id="usersBody"></tbody>
-          </table>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th onclick="srt('u','idx')">#</th><th onclick="srt('u','name')">Name ↕</th><th onclick="srt('u','email')">Email ↕</th><th onclick="srt('u','role')">Role ↕</th><th onclick="srt('u','registeredAt')">Registered ↕</th><th>CPL Best</th><th>ATPL Best</th><th>Device</th><th>Actions</th></tr></thead>
+            <tbody id="u-tbody"></tbody>
+          </table></div>
         </div>
       </div>
-    </div>
 
-    <!-- SESSIONS PAGE -->
-    <div id="page-sessions" class="anim hidden">
-      <div class="page-header">
-        <div class="page-title">Live Sessions <span class="live-badge"><span class="live-dot"></span>Live</span></div>
-        <div class="page-sub">Users currently logged in across all devices and networks.</div>
+      <!-- SESSIONS -->
+      <div id="pg-sessions" class="anim hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div><div style="font-size:20px;font-weight:700">Live Sessions <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--green);background:var(--green-g);border:1px solid rgba(63,185,80,.2);padding:3px 9px;border-radius:99px;vertical-align:middle"><span class="sync-dot live"></span>Live</span></div><div style="font-size:12px;color:var(--text3);margin-top:3px">Users currently active across all devices worldwide</div></div>
+          <button class="btn btn-o" onclick="refreshPage()">↻ Refresh</button>
+        </div>
+        <div class="tcard">
+          <div class="tcard-head"><div class="tcard-title"><span class="sync-dot live"></span> Active Now</div></div>
+          <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Email</th><th>Role</th><th>Device</th><th>OS / Browser</th><th>Login Time</th><th>Duration</th><th>Session ID</th><th>Action</th></tr></thead><tbody id="sess-tbody"></tbody></table></div>
+        </div>
+        <div class="tcard" style="margin-top:14px">
+          <div class="tcard-head"><div class="tcard-title">🕐 Recent Sessions (Last 50)</div></div>
+          <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Email</th><th>Device</th><th>Login</th><th>Logout</th><th>Status</th></tr></thead><tbody id="recent-sess-tbody"></tbody></table></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title">🟢 Active Sessions</div><button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button></div>
-        <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Email</th><th>Role</th><th>Login Time</th><th>Duration</th><th>Action</th></tr></thead><tbody id="liveSessionsBody"></tbody></table></div>
-      </div>
-    </div>
 
-    <!-- ACTIVITY PAGE -->
-    <div id="page-activity" class="anim hidden">
-      <div class="page-header">
-        <div class="page-title">Activity Log</div>
-        <div class="page-sub">Complete login and logout history across all devices.</div>
-      </div>
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">📋 All Login Events</div>
-          <div class="card-actions">
-            <input class="search-box" type="text" placeholder="Search…" oninput="filterActivity(this.value)">
-            <button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button>
-            <button class="btn btn-red" onclick="clearLog()">🗑 Clear Log</button>
+      <!-- ACTIVITY -->
+      <div id="pg-activity" class="anim hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div><div style="font-size:20px;font-weight:700">Activity Log</div><div style="font-size:12px;color:var(--text3);margin-top:3px">All events: logins, signups, exams, study sessions</div></div>
+          <div style="display:flex;gap:7px"><button class="btn btn-o" onclick="refreshPage()">↻ Refresh</button><button class="btn btn-r" onclick="clearEvents()">🗑 Clear</button></div>
+        </div>
+        <div class="tcard">
+          <div class="tcard-head">
+            <div class="tcard-title">📋 Event Stream</div>
+            <div class="tcard-actions"><input class="search-input" type="text" placeholder="Filter events…" oninput="filterActivity(this.value)"><select class="search-input" id="actTypeFilter" onchange="filterActivity('')"><option value="">All Events</option><option value="login">Logins</option><option value="signup">Signups</option><option value="cpl_exam">CPL Exams</option><option value="atpl_mock">ATPL Mocks</option><option value="cpl_study">CPL Study</option><option value="atpl_study">ATPL Study</option><option value="logout">Logouts</option></select></div>
           </div>
+          <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Event</th><th>User</th><th>Email</th><th>Device</th><th>OS</th><th>Details</th><th>Time</th></tr></thead><tbody id="act-tbody"></tbody></table></div>
         </div>
-        <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Login</th><th>Logout</th><th>Status</th></tr></thead><tbody id="activityBody"></tbody></table></div>
       </div>
-    </div>
 
-    <!-- PROGRESS PAGE -->
-    <div id="page-progress" class="anim hidden">
-      <div class="page-header">
-        <div class="page-title">Study Progress</div>
-        <div class="page-sub">Detailed per-user study and exam tracking across all subjects.</div>
-      </div>
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">📈 User Progress Overview</div>
-          <div class="card-actions">
-            <input class="search-box" type="text" placeholder="Search…" oninput="filterProgress(this.value)">
-            <button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button>
+      <!-- PROGRESS -->
+      <div id="pg-progress" class="anim hidden">
+        <div style="margin-bottom:20px"><div style="font-size:20px;font-weight:700">Study Progress</div><div style="font-size:12px;color:var(--text3);margin-top:3px">Per-user progress tracked from all devices</div></div>
+        <div class="tcard">
+          <div class="tcard-head">
+            <div class="tcard-title">📈 All Users Progress</div>
+            <div class="tcard-actions"><input class="search-input" type="text" placeholder="Search…" oninput="filterProgress(this.value)"><button class="btn btn-o" onclick="refreshPage()">↻</button></div>
           </div>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr>
-              <th>#</th><th>User</th><th>CPL Best</th><th>CPL Exams</th>
-              <th>ATPL Best</th><th>ATPL Mocks</th>
-              <th>ATPL Subjects</th><th>CPL Session</th><th>ATPL Session</th><th>Details</th>
-            </tr></thead>
-            <tbody id="progressBody"></tbody>
-          </table>
+          <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Email</th><th>CPL Best</th><th>CPL Exams</th><th>ATPL Best</th><th>ATPL Mocks</th><th>ATPL Done</th><th>CPL Session</th><th>ATPL Session</th><th>Action</th></tr></thead><tbody id="prog-tbody"></tbody></table></div>
         </div>
       </div>
-    </div>
 
-    <!-- EXAMS PAGE -->
-    <div id="page-exams" class="anim hidden">
-      <div class="page-header">
-        <div class="page-title">Exam Results</div>
-        <div class="page-sub">All mock exam results across all users.</div>
-      </div>
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">✈️ CPL Mock Exam Results</div>
-          <div class="card-actions"><button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button></div>
+      <!-- EXAMS -->
+      <div id="pg-exams" class="anim hidden">
+        <div style="margin-bottom:20px"><div style="font-size:20px;font-weight:700">Exam Results</div><div style="font-size:12px;color:var(--text3);margin-top:3px">All mock exam attempts from all users and devices</div></div>
+        <div class="tcard" style="margin-bottom:16px">
+          <div class="tcard-head"><div class="tcard-title">✈️ CPL Mock Exams</div></div>
+          <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Date</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th><th>Result</th></tr></thead><tbody id="cpl-exam-tbody"></tbody></table></div>
         </div>
-        <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Date</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th><th>Result</th></tr></thead><tbody id="cplExamsBody"></tbody></table></div>
+        <div class="tcard">
+          <div class="tcard-head"><div class="tcard-title">🌍 ATPL Mock Exams</div></div>
+          <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Date</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th><th>Result</th></tr></thead><tbody id="atpl-exam-tbody"></tbody></table></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title">🌍 ATPL Mock Exam Results</div></div>
-        <div class="tbl-wrap"><table><thead><tr><th>#</th><th>User</th><th>Date</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th><th>Result</th></tr></thead><tbody id="atplExamsBody"></tbody></table></div>
-      </div>
-    </div>
 
-    <!-- SETTINGS PAGE -->
-    <div id="page-settings" class="anim hidden">
-      <div class="page-header">
-        <div class="page-title">Admin Credentials</div>
-        <div class="page-sub">Update your admin login details.</div>
-      </div>
-      <div class="card" style="overflow:visible">
-        <div class="card-head"><div class="card-title">🔑 Change Credentials</div></div>
-        <div style="padding:20px">
-          <div class="modal-msg" id="credMsg"></div>
-          <div class="creds-grid">
-            <div class="field" style="margin-bottom:0"><label>New Email</label><input class="inp" type="email" id="credEmail"></div>
-            <div class="field" style="margin-bottom:0"><label>Current Password <small style="color:var(--text3);text-transform:none;letter-spacing:0">(required)</small></label><div class="pw-wrap"><input class="inp" type="password" id="credCur" placeholder="Current password"><button class="pw-btn" onclick="tpw('credCur','credEye0')" id="credEye0">👁</button></div></div>
-            <div class="field" style="margin-bottom:0"><label>New Password <small style="color:var(--text3);text-transform:none;letter-spacing:0">(leave blank to keep)</small></label><div class="pw-wrap"><input class="inp" type="password" id="credNew" placeholder="New password"><button class="pw-btn" onclick="tpw('credNew','credEye1')" id="credEye1">👁</button></div></div>
-            <div class="field" style="margin-bottom:0"><label>Confirm New Password</label><div class="pw-wrap"><input class="inp" type="password" id="credConf" placeholder="Confirm"><button class="pw-btn" onclick="tpw('credConf','credEye2')" id="credEye2">👁</button></div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px">
-            <div style="font-size:12px;color:var(--text3)">Current: <strong id="credCurShow" style="color:var(--text2)"></strong></div>
-            <button class="btn btn-blue" onclick="saveCreds()" style="padding:8px 18px">Save Credentials</button>
+      <!-- SETTINGS -->
+      <div id="pg-settings" class="anim hidden">
+        <div style="margin-bottom:20px"><div style="font-size:20px;font-weight:700">Admin Credentials</div><div style="font-size:12px;color:var(--text3);margin-top:3px">Change your admin login details</div></div>
+        <div class="tcard" style="overflow:visible">
+          <div class="tcard-head"><div class="tcard-title">🔑 Update Credentials</div></div>
+          <div style="padding:18px">
+            <div class="mbar" id="credBar"></div>
+            <div class="settings-grid">
+              <div class="field" style="margin-bottom:0"><label>New Email</label><input class="inp" type="email" id="credEmail"></div>
+              <div class="field" style="margin-bottom:0"><label>Current Password (required)</label><div class="pw-row"><input class="inp" type="password" id="credCur"><button class="eye-btn" onclick="togglePw('credCur','ce0')" id="ce0">👁</button></div></div>
+              <div class="field" style="margin-bottom:0"><label>New Password</label><div class="pw-row"><input class="inp" type="password" id="credNew" placeholder="Leave blank to keep"><button class="eye-btn" onclick="togglePw('credNew','ce1')" id="ce1">👁</button></div></div>
+              <div class="field" style="margin-bottom:0"><label>Confirm New Password</label><div class="pw-row"><input class="inp" type="password" id="credConf"><button class="eye-btn" onclick="togglePw('credConf','ce2')" id="ce2">👁</button></div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+              <div style="font-size:11px;color:var(--text3)">Current email: <strong id="curEmailLbl" style="color:var(--text2)"></strong></div>
+              <button class="btn btn-b" style="padding:7px 16px" onclick="saveCreds()">Save</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-  </main>
-</div>
+    </div>
+  </div>
 </div>
 
-<!-- USER DETAIL MODAL -->
-<div id="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-title" id="modalTitle">Edit User</div>
-    <div class="modal-sub" id="modalSub">—</div>
-    <div class="modal-msg" id="modalMsg"></div>
+<!-- USER EDIT/DETAIL MODAL -->
+<div id="modal-bg">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-title" id="modalH">User</div><div class="modal-sub-txt" id="modalSub"></div></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="mbar" id="mbar"></div>
 
-    <!-- Edit form -->
-    <div id="editForm">
-      <div class="field"><label>Email Address</label><input class="inp" type="email" id="editEmail"></div>
-      <div class="field"><label>Role</label>
-        <select class="inp" id="editRole" style="cursor:pointer">
-          <option>Student</option><option>Pilot Trainee</option><option>Instructor</option><option>Other</option>
-        </select>
+      <div id="editForm">
+        <div class="field"><label>Email</label><input class="inp" type="email" id="eEmail"></div>
+        <div class="field"><label>Role</label>
+          <select class="inp" id="eRole" style="cursor:pointer"><option>Student</option><option>Pilot Trainee</option><option>Instructor</option><option>Other</option></select>
+        </div>
+        <div class="divider"></div>
+        <div class="sect-lbl">Change Password</div>
+        <div class="field"><label>New Password <small style="text-transform:none;letter-spacing:0;color:var(--text3)">(blank = keep current)</small></label>
+          <div class="pw-row"><input class="inp" type="password" id="ePw" placeholder="New password"><button class="eye-btn" onclick="togglePw('ePw','ePwE')" id="ePwE">👁</button></div>
+        </div>
+        <div class="field"><label>Confirm</label>
+          <div class="pw-row"><input class="inp" type="password" id="ePwC"><button class="eye-btn" onclick="togglePw('ePwC','ePwCE')" id="ePwCE">👁</button></div>
+        </div>
       </div>
-      <div class="divider"></div>
-      <div class="sect-lbl">Change Password</div>
-      <div class="field"><label>New Password <small style="text-transform:none;letter-spacing:0;color:var(--text3)">(leave blank to keep)</small></label>
-        <div class="pw-wrap"><input class="inp" type="password" id="editPw" placeholder="New password"><button class="pw-btn" onclick="tpw('editPw','editPwE')" id="editPwE">👁</button></div>
-      </div>
-      <div class="field"><label>Confirm Password</label>
-        <div class="pw-wrap"><input class="inp" type="password" id="editPwC" placeholder="Confirm"><button class="pw-btn" onclick="tpw('editPwC','editPwCE')" id="editPwCE">👁</button></div>
+
+      <div id="detailView" class="hidden">
+        <div class="profile-card" id="profileCard"></div>
       </div>
     </div>
-
-    <!-- Detail view -->
-    <div id="detailView" class="hidden">
-      <div class="detail-panel" id="detailPanel"></div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
-      <button class="btn btn-red hidden" id="deleteBtn" onclick="deleteUserFromModal()">🗑 Delete User</button>
-      <button class="btn btn-blue hidden" id="saveBtn" onclick="saveEdit()">Save Changes</button>
+    <div class="modal-foot">
+      <button class="btn btn-o" onclick="closeModal()">Close</button>
+      <button class="btn btn-r hidden" id="delBtn" onclick="deleteModal()">🗑 Delete Permanently</button>
+      <button class="btn btn-b hidden" id="saveBtn" onclick="saveEdit()">Save Changes</button>
     </div>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════════
-// STORAGE — reads same localStorage keys as ExamHub.html
-// ════════════════════════════════════════════════════════════
-const ls=k=>{try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}};
-const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
-const lsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
-const lsKey=(e,s)=>'examhub_'+e.replace('@','_at_')+'_'+s;
-
-// ════════════════════════════════════════════════════════════
-// CLOUD SYNC — uses Anthropic API's persistent artifact storage
-// Syncs user data every 30s and on key events for cross-device tracking
-// ════════════════════════════════════════════════════════════
-const SYNC_KEY = 'examhub_cloud_sync';
-const SYNC_INTERVAL = 30000;
-let syncStatus = 'idle';
-let lastSyncTime = null;
-
-async function cloudSync() {
-  setSyncStatus('syncing');
-  try {
-    // Merge remote data with local data
-    const local = getLocalSnapshot();
-    const merged = mergeWithRemote(local);
-    await saveToCloud(merged);
-    lastSyncTime = new Date();
-    setSyncStatus('synced');
-  } catch(e) {
-    setSyncStatus('offline');
-  }
-}
-
-function getLocalSnapshot() {
-  return {
-    users: getUsers(),
-    log: getLog(),
-    ts: Date.now()
-  };
-}
-
-async function saveToCloud(data) {
-  // Use localStorage with a broadcast channel simulation for cross-tab sync
-  // For true cross-device: this would call a real API
-  // We use a shared key with timestamp for conflict resolution
-  const existing = ls(SYNC_KEY) || {users:[], log:[], ts:0};
-  const merged = smartMerge(existing, data);
-  lsSet(SYNC_KEY, merged);
-  lsSet('examhub_users', merged.users);
-  lsSet('examhub_loginlog', merged.log);
-}
-
-function mergeWithRemote(local) {
-  const remote = ls(SYNC_KEY) || {users:[], log:[], ts:0};
-  return smartMerge(local, remote);
-}
-
-function smartMerge(a, b) {
-  // Merge users by email (most recent data wins)
-  const usersMap = {};
-  [...(a.users||[]), ...(b.users||[])].forEach(u => {
-    const existing = usersMap[u.email];
-    if (!existing || (u.registeredAt && !existing.registeredAt)) {
-      usersMap[u.email] = u;
-    }
-  });
-  // Merge logs (deduplicate by sessionId)
-  const logMap = {};
-  [...(a.log||[]), ...(b.log||[])].forEach(e => {
-    const key = e.sessionId || (e.email + e.loginTime);
-    const existing = logMap[key];
-    // Prefer entry with logoutTime (more complete)
-    if (!existing || (e.logoutTime && !existing.logoutTime)) {
-      logMap[key] = e;
-    }
-  });
-  const logs = Object.values(logMap).sort((x,y) => (y.sessionId||0)-(x.sessionId||0));
-  return { users: Object.values(usersMap), log: logs.slice(0,500), ts: Date.now() };
-}
-
-function setSyncStatus(status) {
-  syncStatus = status;
-  // Update any visible sync indicators
-  document.querySelectorAll('.sync-dot').forEach(d => {
-    d.className = 'sync-dot ' + status;
-  });
-}
-
-// ════════════════════════════════════════════════════════════
-// AUTH
-// ════════════════════════════════════════════════════════════
-let ADMIN_EMAIL = 'admin@examhub.com';
-let ADMIN_PASSWORD = 'admin123';
-(function(){ const c=ls('examhub_admin_creds'); if(c){ADMIN_EMAIL=c.email||ADMIN_EMAIL; ADMIN_PASSWORD=c.password||ADMIN_PASSWORD;} })();
-
-const tpw = (iid, bid) => {
-  const i=document.getElementById(iid), b=document.getElementById(bid);
-  if(i.type==='password'){i.type='text'; b.textContent='🙈';} else {i.type='password'; b.textContent='👁';}
+// ════════════════════════════════════════════════════════════════
+// CLOUD DATABASE — reads from window.storage (server-side, cross-device)
+// Falls back to localStorage if storage API unavailable
+// ════════════════════════════════════════════════════════════════
+const KEYS = {
+  USERS:    'eh_db_users',
+  SESSIONS: 'eh_db_sessions',
+  EVENTS:   'eh_db_events',
+  PROGRESS: 'eh_db_progress'
 };
 
-function showLoginErr(msg){ document.getElementById('loginErrTxt').textContent=msg; document.getElementById('loginErr').classList.add('show'); }
+async function dbGet(key) {
+  try { const r = await window.storage.get(key, true); return r ? JSON.parse(r.value) : null; }
+  catch(e) { try { return JSON.parse(localStorage.getItem('cloud_'+key)); } catch(e2) { return null; } }
+}
+async function dbSet(key, data) {
+  const v = JSON.stringify(data);
+  try { await window.storage.set(key, v, true); } catch(e) {}
+  try { localStorage.setItem('cloud_'+key, v); } catch(e) {}
+}
+async function dbDel(key) {
+  try { await window.storage.delete(key, true); } catch(e) {}
+  try { localStorage.removeItem('cloud_'+key); } catch(e) {}
+}
 
-function doLogin(){
-  const email=(document.getElementById('admEmail').value||'').trim().toLowerCase();
-  const pw=document.getElementById('admPw').value;
-  document.getElementById('loginErr').classList.remove('show');
+// Also read localStorage directly (same-device users)
+function lsUsers() { try { return JSON.parse(localStorage.getItem('examhub_users')||'[]'); } catch(e){return[];} }
+function lsLog() { try { return JSON.parse(localStorage.getItem('examhub_loginlog')||'[]'); } catch(e){return[];} }
+const lsKey = (e,s) => 'examhub_'+e.replace('@','_at_')+'_'+s;
+function lsGet(k) { try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;} }
+
+async function getAllUsers() {
+  const cloud = await dbGet(KEYS.USERS) || [];
+  const local = lsUsers();
+  // Merge: cloud = cross-device, local = this device
+  const map = {};
+  [...cloud, ...local].forEach(u => { if(u?.email) map[u.email] = Object.assign({}, map[u.email]||{}, u); });
+  return Object.values(map);
+}
+async function saveAllUsers(users) {
+  localStorage.setItem('examhub_users', JSON.stringify(users));
+  await dbSet(KEYS.USERS, users);
+}
+async function getAllSessions() {
+  const cloud = await dbGet(KEYS.SESSIONS) || [];
+  const local = lsLog();
+  // Merge by sessionId
+  const map = {};
+  [...cloud, ...local].forEach(s => {
+    const k = s.sessionId || (s.email+s.loginTime);
+    if(!map[k] || (s.logoutTime && !map[k].logoutTime)) map[k] = s;
+  });
+  return Object.values(map).sort((a,b) => (b.ts||b.sessionId||0)-(a.ts||a.sessionId||0));
+}
+async function getAllEvents() { return await dbGet(KEYS.EVENTS) || []; }
+async function getAllProgress() {
+  const cloud = await dbGet(KEYS.PROGRESS) || {};
+  // Merge with localStorage progress
+  const users = await getAllUsers();
+  users.forEach(u => {
+    if(!cloud[u.email]) cloud[u.email] = {};
+    const ce = lsGet(lsKey(u.email,'cpl_exhist')); if(ce && !cloud[u.email].cpl_exam) cloud[u.email].cpl_exam = ce;
+    const ae = lsGet(lsKey(u.email,'atpl_exhist')); if(ae && !cloud[u.email].atpl_mock) cloud[u.email].atpl_mock = ae;
+    const as = lsGet(lsKey(u.email,'atpl_completed_subjects')); if(as && !cloud[u.email].atpl_subjects) cloud[u.email].atpl_subjects = as;
+    const cs = lsGet(lsKey(u.email,'cpl_study')); if(cs) cloud[u.email].cpl_study_saved = true;
+    const ats = lsGet(lsKey(u.email,'atpl_study')); if(ats) cloud[u.email].atpl_study_saved = true;
+  });
+  return cloud;
+}
+
+// ════════════════════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════════════════════
+let ADMIN_EMAIL = 'admin@examhub.com', ADMIN_PASSWORD = 'admin123';
+(function(){ const c=lsGet('examhub_admin_creds'); if(c){ADMIN_EMAIL=c.email||ADMIN_EMAIL;ADMIN_PASSWORD=c.password||ADMIN_PASSWORD;} })();
+
+const togglePw=(iid,bid)=>{const i=document.getElementById(iid),b=document.getElementById(bid);if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';}};
+
+function showLoginErr(m){document.getElementById('lErrTxt').textContent=m;document.getElementById('lErr').classList.add('show');}
+
+async function doAdminLogin(){
+  const email=(document.getElementById('aEmail').value||'').trim().toLowerCase();
+  const pw=document.getElementById('aPw').value;
+  document.getElementById('lErr').classList.remove('show');
   if(!email||!pw) return showLoginErr('Please enter both fields.');
-  const btn=document.getElementById('loginBtn'); btn.disabled=true; btn.textContent='Signing in…';
-  setTimeout(()=>{
-    if(email===ADMIN_EMAIL && pw===ADMIN_PASSWORD){
-      lsSet('examhub_admin_session',{email,ts:Date.now()});
-      showApp();
-    } else showLoginErr('Invalid admin credentials.');
-    btn.disabled=false; btn.innerHTML='🔐 Sign In';
-  }, 500);
+  const btn=document.getElementById('lBtn');btn.disabled=true;btn.textContent='Verifying…';
+  // Small delay for UX
+  await new Promise(r=>setTimeout(r,400));
+  if(email===ADMIN_EMAIL&&pw===ADMIN_PASSWORD){
+    localStorage.setItem('examhub_admin_session',JSON.stringify({email,ts:Date.now()}));
+    showApp();
+  } else showLoginErr('Invalid admin credentials.');
+  btn.disabled=false;btn.innerHTML='🔐 Sign In';
+}
+function doAdminLogout(){
+  localStorage.removeItem('examhub_admin_session');
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('aEmail').value='';document.getElementById('aPw').value='';
+  document.getElementById('lErr').classList.remove('show');
 }
 
 function showApp(){
   document.getElementById('loginScreen').style.display='none';
-  document.getElementById('app').style.display='block';
-  document.getElementById('sideAdminEmail').textContent=ADMIN_EMAIL.split('@')[0];
-  document.getElementById('sideAdminAvatar').textContent=ADMIN_EMAIL.charAt(0).toUpperCase();
-  document.getElementById('credCurShow').textContent=ADMIN_EMAIL;
+  document.getElementById('app').style.display='grid';
+  document.getElementById('adminAv').textContent=ADMIN_EMAIL.charAt(0).toUpperCase();
+  document.getElementById('adminLbl').textContent=ADMIN_EMAIL.split('@')[0];
   document.getElementById('credEmail').value=ADMIN_EMAIL;
-  refreshAll();
-  cloudSync();
-  setInterval(()=>{ refreshAll(); cloudSync(); }, SYNC_INTERVAL);
+  document.getElementById('curEmailLbl').textContent=ADMIN_EMAIL;
+  loadPage();
+  // Auto-refresh every 20s
+  setInterval(loadPage, 20000);
+  setSyncStatus('live');
 }
 
-function doLogout(){
-  lsDel('examhub_admin_session');
-  document.getElementById('app').style.display='none';
-  document.getElementById('loginScreen').style.display='flex';
-  document.getElementById('admEmail').value='';
-  document.getElementById('admPw').value='';
-  document.getElementById('loginErr').classList.remove('show');
+function setSyncStatus(s){
+  const dot=document.getElementById('syncDot'),lbl=document.getElementById('syncLbl');
+  dot.className='sync-dot'+{live:' live',syncing:' syncing',err:' err'}[s];
+  lbl.textContent={live:'Live',syncing:'Syncing…',err:'Offline'}[s];
 }
 
-// ════════════════════════════════════════════════════════════
-// DATA ACCESS
-// ════════════════════════════════════════════════════════════
-function getUsers(){ return ls('examhub_users')||[]; }
-function saveUsers(u){ lsSet('examhub_users',u); cloudSync(); }
-function getLog(){ return ls('examhub_loginlog')||[]; }
-function saveLog(l){ lsSet('examhub_loginlog',l); }
-function getUserProgress(email){
-  return {
-    cplHist: ls(lsKey(email,'cpl_exhist'))||[],
-    atplHist: ls(lsKey(email,'atpl_exhist'))||[],
-    cplStudy: ls(lsKey(email,'cpl_study')),
-    atplStudy: ls(lsKey(email,'atpl_study')),
-    atplDone: ls(lsKey(email,'atpl_completed_subjects'))||{}
-  };
+// ════════════════════════════════════════════════════════════════
+// PAGE ROUTING
+// ════════════════════════════════════════════════════════════════
+const PAGES=['dashboard','users','sessions','activity','progress','exams','settings'];
+let currentPage='dashboard';
+
+function goTo(page, el){
+  PAGES.forEach(p=>{document.getElementById('pg-'+p).classList.add('hidden');});
+  const pgEl=document.getElementById('pg-'+page);pgEl.classList.remove('hidden');
+  pgEl.classList.remove('anim');void pgEl.offsetWidth;pgEl.classList.add('anim');
+  document.querySelectorAll('.tn,.snav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  const mirror=document.getElementById('snav-'+page);if(mirror)mirror.classList.add('active');
+  currentPage=page; loadPage();
 }
 
-// ════════════════════════════════════════════════════════════
-// NAVIGATION
-// ════════════════════════════════════════════════════════════
-const PAGES = ['dashboard','users','sessions','activity','progress','exams','settings'];
-function navTo(page, navEl){
-  PAGES.forEach(p => document.getElementById('page-'+p).classList.add('hidden'));
-  document.getElementById('page-'+page).classList.remove('hidden');
-  document.getElementById('page-'+page).classList.remove('anim');
-  void document.getElementById('page-'+page).offsetWidth;
-  document.getElementById('page-'+page).classList.add('anim');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  navEl.classList.add('active');
-  // Render the page
-  const renderers = {
-    dashboard: renderDashboard,
-    users: renderUsers,
-    sessions: renderLiveSessions,
-    activity: renderActivity,
-    progress: renderProgress,
-    exams: renderExams,
-    settings: renderSettings
-  };
-  if(renderers[page]) renderers[page]();
+function refreshPage(){ loadPage(); }
+
+async function loadPage(){
+  setSyncStatus('syncing');
+  try {
+    if(currentPage==='dashboard') await renderDashboard();
+    else if(currentPage==='users') await renderUsers();
+    else if(currentPage==='sessions') await renderSessions();
+    else if(currentPage==='activity') await renderActivity();
+    else if(currentPage==='progress') await renderProgress();
+    else if(currentPage==='exams') await renderExams();
+    setSyncStatus('live');
+  } catch(e){ setSyncStatus('err'); console.error(e); }
 }
 
-function refreshAll(){
-  const activePage = PAGES.find(p => !document.getElementById('page-'+p).classList.contains('hidden'));
-  if(activePage) {
-    const renderers = {
-      dashboard: renderDashboard,
-      users: renderUsers,
-      sessions: renderLiveSessions,
-      activity: renderActivity,
-      progress: renderProgress,
-      exams: renderExams
-    };
-    if(renderers[activePage]) renderers[activePage]();
-  }
-}
-
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // DASHBOARD
-// ════════════════════════════════════════════════════════════
-function renderDashboard(){
-  const users = getUsers();
-  const log = getLog();
-  const active = log.filter(e => e.logoutTime === null);
-  // Count all exam history
-  let totalExams=0, passCount=0, topCPL=0, studySessions=0;
-  users.forEach(u => {
-    const {cplHist,atplHist,cplStudy,atplStudy} = getUserProgress(u.email);
-    totalExams += cplHist.length + atplHist.length;
-    passCount += cplHist.filter(h=>h.passed).length;
-    const best = cplHist.length ? Math.max(...cplHist.map(h=>h.pct)) : 0;
-    if(best > topCPL) topCPL = best;
-    if(cplStudy || atplStudy) studySessions++;
+// ════════════════════════════════════════════════════════════════
+async function renderDashboard(){
+  const [users, sessions, events, progress] = await Promise.all([getAllUsers(), getAllSessions(), getAllEvents(), getAllProgress()]);
+  const active = sessions.filter(s=>s.logoutTime===null);
+  let totalExams=0, passCount=0, topCPL=0, studyCount=0;
+  Object.values(progress).forEach(p => {
+    const ch = p.cpl_exam||[]; const ah = p.atpl_mock||[];
+    totalExams += ch.length+ah.length;
+    passCount += ch.filter(h=>h.passed).length;
+    const best = ch.length ? Math.max(...ch.map(h=>h.pct)) : 0;
+    if(best>topCPL) topCPL=best;
+    if(p.cpl_study_saved||p.atpl_study_saved) studyCount++;
   });
-  const passRate = users.reduce((acc,u) => acc + (getUserProgress(u.email).cplHist.length||0), 0);
-  const passRatePct = passRate > 0 ? Math.round(passCount/passRate*100) : 0;
-
-  document.getElementById('ds-users').textContent = users.length;
-  document.getElementById('ds-active').textContent = active.length;
-  document.getElementById('ds-logins').textContent = log.length;
-  document.getElementById('ds-exams').textContent = totalExams;
-  document.getElementById('ds-pass').textContent = passRatePct+'%';
-  document.getElementById('ds-study').textContent = studySessions;
-  document.getElementById('ds-top').textContent = topCPL ? topCPL+'%' : '—';
-
-  // Active sessions table
-  const tbody = document.getElementById('activeSessionsBody');
-  if(!active.length){
-    tbody.innerHTML='<tr><td colspan="5" class="no-data">No active sessions right now.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = active.map((e,i) => `
-    <tr>
-      <td><strong>${e.name||'—'}</strong></td>
-      <td style="color:var(--text2);font-size:12px">${e.email}</td>
-      <td><span class="pill pill-blue">${e.role||'—'}</span></td>
-      <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.loginTime||'—'}</td>
-      <td><span class="pill pill-green"><span class="live-dot" style="width:5px;height:5px"></span> Active</span></td>
-    </tr>`).join('');
+  const totalCPL = Object.values(progress).reduce((s,p)=>(p.cpl_exam||[]).length+s,0);
+  const passRate = totalCPL>0 ? Math.round(passCount/totalCPL*100) : 0;
+  document.getElementById('db-stats').innerHTML = [
+    ['sc-blue','👥',users.length,'Total Users','Across all devices'],
+    ['sc-green','🟢',active.length,'Active Sessions','Currently online'],
+    ['sc-amber','📋',sessions.length,'Total Logins','All time'],
+    ['sc-purple','✈️',totalExams,'Exams Taken','CPL + ATPL combined'],
+  ].map(([cls,icon,val,lbl,sub])=>`<div class="stat-card ${cls}"><div class="sc-glow"></div><div class="sc-icon">${icon}</div><div class="sc-val">${val}</div><div class="sc-label">${lbl}</div><div class="sc-sub">${sub}</div></div>`).join('');
+  document.getElementById('db-stats2').innerHTML = [
+    ['sc-green','✅',passRate+'%','CPL Pass Rate',passCount+' passed of '+totalCPL],
+    ['sc-blue','📚',studyCount,'Active Learners','Have saved sessions'],
+    ['sc-amber','🏆',topCPL?topCPL+'%':'—','Top CPL Score','Highest mock result'],
+  ].map(([cls,icon,val,lbl,sub])=>`<div class="stat-card ${cls}"><div class="sc-glow"></div><div class="sc-icon">${icon}</div><div class="sc-val">${val}</div><div class="sc-label">${lbl}</div><div class="sc-sub">${sub}</div></div>`).join('');
+  // Active sessions
+  document.getElementById('db-active-tbody').innerHTML = active.length ? active.map(s=>`<tr>
+    <td><strong>${s.name||'—'}</strong></td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${s.email}</td>
+    <td><span class="dtag">${s.device||'Desktop'}</span></td>
+    <td style="font-size:11px;color:var(--text2)">${s.browser||''} / ${s.os||''}</td>
+    <td style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3)">${s.loginTime||'—'}</td>
+    <td style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:11px">${getDur(s)}</td>
+    <td><button class="btn btn-r" style="padding:3px 8px;font-size:9px" onclick="forceEnd('${s.sessionId||''}')">End</button></td>
+  </tr>`).join(''): '<tr><td colspan="7" class="no-data">No active sessions right now.</td></tr>';
+  // Events feed
+  document.getElementById('db-events').innerHTML = events.slice(0,15).length ? events.slice(0,15).map(e=>{
+    const icons={login:'🔑',signup:'✨',logout:'🚪',cpl_exam:'✈️',atpl_mock:'🌍',cpl_study:'📚',atpl_study:'📖'};
+    const colors={login:'var(--blue-g)',signup:'var(--green-g)',logout:'rgba(107,114,128,.1)',cpl_exam:'var(--amber-g)',atpl_mock:'var(--purple-g)',cpl_study:'var(--blue-g)',atpl_study:'var(--cyan-g)'};
+    return `<div class="ev-row"><div class="ev-icon" style="background:${colors[e.type]||'var(--s2)'}">${icons[e.type]||'📌'}</div><div class="ev-content"><div class="ev-name">${e.name||e.email||'—'}</div><div class="ev-detail">${formatEvent(e)}</div></div><div class="ev-time">${e.time||'—'}</div></div>`;
+  }).join(''): '<div class="no-data">No events yet. Events appear as users interact with ExamHub.</div>';
 }
 
-// ════════════════════════════════════════════════════════════
-// USERS TABLE
-// ════════════════════════════════════════════════════════════
-let allUsers=[], uFilter='', uSortCol='idx', uSortDir=1;
+function formatEvent(e){
+  if(e.type==='login') return 'Logged in from '+[e.device,e.browser,e.os].filter(Boolean).join(' · ');
+  if(e.type==='signup') return 'New account created — Role: '+e.role;
+  if(e.type==='logout') return 'Logged out';
+  if(e.type==='cpl_exam') return 'CPL Mock Exam — '+e.pct+'% — '+(e.passed?'PASS':'FAIL');
+  if(e.type==='atpl_mock') return 'ATPL Mock Exam — '+e.pct+'% — '+(e.passed?'PASS':'FAIL');
+  if(e.type==='cpl_study') return 'CPL Study Session — '+e.qs+' questions';
+  if(e.type==='atpl_study') return 'ATPL Study — '+(e.subject||'All')+' — '+e.qs+' questions';
+  return e.type;
+}
 
-function renderUsers(){ allUsers=getUsers(); displayUsers(); }
+function getDur(s){
+  try{const now=Date.now();const start=s.ts||0;if(!start)return'—';const m=Math.floor((now-start)/60000);return m<60?m+'m':Math.floor(m/60)+'h '+(m%60)+'m';}catch(e){return'—';}
+}
 
-function displayUsers(){
-  const tbody = document.getElementById('usersBody');
-  let data = allUsers.map((u,i) => ({...u, idx:i+1}));
-  if(uFilter){ const f=uFilter.toLowerCase(); data=data.filter(u=>(u.name||'').toLowerCase().includes(f)||(u.email||'').toLowerCase().includes(f)||(u.role||'').toLowerCase().includes(f)); }
-  data.sort((a,b)=>{ const av=a[uSortCol]||'',bv=b[uSortCol]||''; return uSortDir*(String(av).localeCompare(String(bv))); });
-  if(!data.length){ tbody.innerHTML='<tr><td colspan="8" class="no-data">No users registered yet.</td></tr>'; return; }
-  tbody.innerHTML = data.map(u => {
-    const {cplHist,atplHist} = getUserProgress(u.email);
-    const cplBest = cplHist.length ? Math.max(...cplHist.map(h=>h.pct)) : null;
-    const atplBest = atplHist.length ? Math.max(...atplHist.map(h=>h.pct)) : null;
-    const orig = allUsers.indexOf(allUsers.find(x=>x.email===u.email));
+// ════════════════════════════════════════════════════════════════
+// USERS
+// ════════════════════════════════════════════════════════════════
+let _users=[], _uFilter='', _uSortCol='idx', _uSortDir=1;
+async function renderUsers(){ _users=await getAllUsers(); displayUsers(); }
+function filterUsers(v){ _uFilter=v; displayUsers(); }
+function srt(t,col){ if(t==='u'){if(_uSortCol===col)_uSortDir*=-1;else{_uSortCol=col;_uSortDir=1;}displayUsers();} }
+async function displayUsers(){
+  const progress = await getAllProgress();
+  const sessions = await getAllSessions();
+  let data = _users.map((u,i)=>({...u,idx:i+1}));
+  if(_uFilter){const f=_uFilter.toLowerCase();data=data.filter(u=>(u.name||'').toLowerCase().includes(f)||(u.email||'').toLowerCase().includes(f)||(u.role||'').toLowerCase().includes(f));}
+  data.sort((a,b)=>{const av=a[_uSortCol]||'',bv=b[_uSortCol]||'';return _uSortDir*(String(av).localeCompare(String(bv)));});
+  const tbody=document.getElementById('u-tbody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="9" class="no-data">No users yet.</td></tr>';return;}
+  // Get last device for each user
+  const lastSess={};sessions.forEach(s=>{if(!lastSess[s.email]||s.ts>lastSess[s.email].ts)lastSess[s.email]=s;});
+  tbody.innerHTML=data.map(u=>{
+    const p=progress[u.email]||{};
+    const ch=p.cpl_exam||[];const ah=p.atpl_mock||[];
+    const cb=ch.length?Math.max(...ch.map(h=>h.pct)):null;
+    const ab=ah.length?Math.max(...ah.map(h=>h.pct)):null;
+    const ls2=lastSess[u.email];
+    const orig=_users.findIndex(x=>x.email===u.email);
+    const isActive=sessions.some(s=>s.email===u.email&&s.logoutTime===null);
     return `<tr>
       <td>${u.idx}</td>
-      <td><strong>${u.name||'—'}</strong></td>
-      <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${u.email}</td>
-      <td><span class="pill pill-blue">${u.role||'—'}</span></td>
-      <td style="color:var(--text3);font-size:11px;font-family:'JetBrains Mono',monospace">${u.registeredAt||'—'}</td>
-      <td>${cplBest!==null ? `<div class="score-bar-wrap"><div class="score-bar"><div class="score-fill ${cplBest>=70?'pass':'fail'}" style="width:${cplBest}%"></div></div><span class="score-num ${cplBest>=70?'pass':'fail'}">${cplBest}%</span></div>` : '<span style="color:var(--text3)">—</span>'}</td>
-      <td>${atplBest!==null ? `<div class="score-bar-wrap"><div class="score-bar"><div class="score-fill ${atplBest>=70?'pass':'fail'}" style="width:${atplBest}%"></div></div><span class="score-num ${atplBest>=70?'pass':'fail'}">${atplBest}%</span></div>` : '<span style="color:var(--text3)">—</span>'}</td>
-      <td style="display:flex;gap:5px">
-        <button class="btn btn-blue" style="padding:4px 10px;font-size:10px" onclick="openEdit(${orig})">✎ Edit</button>
-        <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="openDetail(${orig})">👁 View</button>
-        <button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="deleteUser(${orig})">🗑</button>
+      <td><div style="display:flex;align-items:center;gap:7px">${isActive?'<span class="sync-dot live" style="flex-shrink:0"></span>':'''}<strong>${u.name||'—'}</strong></div></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${u.email}</td>
+      <td><span class="pill p-blue">${u.role||'—'}</span></td>
+      <td style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">${u.registeredAt||'—'}</td>
+      <td>${cb!==null?`<div class="sbar-row"><div class="sbar"><div class="sbar-fill ${cb>=70?'pass':'fail'}" style="width:${cb}%"></div></div><span class="snum ${cb>=70?'pass':'fail'}">${cb}%</span></div>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${ab!==null?`<div class="sbar-row"><div class="sbar"><div class="sbar-fill ${ab>=70?'pass':'fail'}" style="width:${ab}%"></div></div><span class="snum ${ab>=70?'pass':'fail'}">${ab}%</span></div>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${ls2?`<span class="dtag">${ls2.device||'—'}</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td style="display:flex;gap:4px">
+        <button class="btn btn-b" style="padding:3px 9px" onclick="openEdit(${orig})">✎</button>
+        <button class="btn btn-o" style="padding:3px 9px" onclick="openDetail(${orig})">👁</button>
+        <button class="btn btn-r" style="padding:3px 9px" onclick="deleteUser(${orig})">🗑</button>
       </td>
     </tr>`;
   }).join('');
 }
-
-function filterUsers(v){ uFilter=v; displayUsers(); }
-function srt(tbl, col){
-  if(tbl==='users'){if(uSortCol===col)uSortDir*=-1;else{uSortCol=col;uSortDir=1;}displayUsers();}
+async function deleteUser(idx){
+  const u=_users[idx]; if(!u||!confirm(`Permanently delete ${u.name}? All their data will be erased.`)) return;
+  ['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>localStorage.removeItem(lsKey(u.email,s)));
+  _users.splice(idx,1); await saveAllUsers(_users);
+  // Remove from progress
+  const prog = await getAllProgress(); delete prog[u.email]; await dbSet(KEYS.PROGRESS, prog);
+  await renderUsers();
+}
+async function clearAllUsers(){
+  if(!confirm('DELETE ALL USERS permanently? This cannot be undone.')) return;
+  const all = await getAllUsers();
+  all.forEach(u=>['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>localStorage.removeItem(lsKey(u.email,s))));
+  localStorage.setItem('examhub_users','[]'); await dbSet(KEYS.USERS,[]);
+  await dbSet(KEYS.PROGRESS,{}); await renderUsers();
+}
+async function exportData(){
+  const users=await getAllUsers(); const progress=await getAllProgress(); const sessions=await getAllSessions();
+  let csv='Name,Email,Role,Registered,CPL Best,CPL Exams,ATPL Best,ATPL Mocks,Last Device,Last Login\n';
+  users.forEach(u=>{
+    const p=progress[u.email]||{};const ch=p.cpl_exam||[];const ah=p.atpl_mock||[];
+    const cb=ch.length?Math.max(...ch.map(h=>h.pct)):'—';const ab=ah.length?Math.max(...ah.map(h=>h.pct)):'—';
+    const ls2=sessions.find(s=>s.email===u.email);
+    csv+=`"${u.name||'—'}","${u.email}","${u.role||'—'}","${u.registeredAt||'—'}","${cb}","${ch.length}","${ab}","${ah.length}","${ls2?.device||'—'}","${ls2?.loginTime||'—'}"\n`;
+  });
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(csv);a.download='examhub-users-'+Date.now()+'.csv';a.click();
 }
 
-function deleteUser(idx){
-  const users=getUsers(); const u=users[idx]; if(!u) return;
-  if(!confirm(`Permanently delete ${u.name} (${u.email}) and ALL their data? This cannot be undone.`)) return;
-  ['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>lsDel(lsKey(u.email,s)));
-  users.splice(idx,1); saveUsers(users);
-  renderUsers(); renderDashboard();
-}
-
-function clearAllUsers(){
-  if(!confirm('Delete ALL users and ALL their data permanently? This cannot be undone.')) return;
-  getUsers().forEach(u=>['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>lsDel(lsKey(u.email,s))));
-  lsSet('examhub_users',[]); renderUsers(); renderDashboard(); renderProgress(); renderExams();
-}
-
-// ════════════════════════════════════════════════════════════
-// LIVE SESSIONS
-// ════════════════════════════════════════════════════════════
-function renderLiveSessions(){
-  const log = getLog();
-  const active = log.filter(e => e.logoutTime === null);
-  const tbody = document.getElementById('liveSessionsBody');
-  if(!active.length){ tbody.innerHTML='<tr><td colspan="7" class="no-data">No active sessions right now.</td></tr>'; return; }
-  tbody.innerHTML = active.map((e,i) => {
-    const dur = e.loginTime ? getDuration(e.loginTime) : '—';
-    return `<tr>
-      <td>${i+1}</td>
-      <td><strong>${e.name||'—'}</strong></td>
-      <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.email}</td>
-      <td><span class="pill pill-blue">${e.role||'—'}</span></td>
-      <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.loginTime||'—'}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">${dur}</td>
-      <td><button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="forceLogout('${e.sessionId}')">Force End</button></td>
-    </tr>`;
-  }).join('');
-}
-
-function getDuration(loginTime){
-  try{
-    // Parse "21 Apr, 14:30" style
-    const now = new Date();
-    const parts = loginTime.match(/(\d+)\s+(\w+),?\s+(\d+):(\d+)/);
-    if(!parts) return '—';
-    const months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-    const d = new Date(now.getFullYear(), months[parts[2]]||0, parseInt(parts[1]), parseInt(parts[3]), parseInt(parts[4]));
-    const diff = Math.floor((now-d)/60000);
-    if(diff<60) return diff+'m';
-    return Math.floor(diff/60)+'h '+(diff%60)+'m';
-  }catch(e){return '—';}
-}
-
-function forceLogout(sid){
-  if(!confirm('Force this session to end?')) return;
-  const log=getLog();
-  const e=log.find(x=>x.sessionId===sid);
-  if(e) e.logoutTime = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' (forced)';
-  saveLog(log); renderLiveSessions(); renderDashboard();
-}
-
-// ════════════════════════════════════════════════════════════
-// ACTIVITY LOG
-// ════════════════════════════════════════════════════════════
-let actFilter='';
-function renderActivity(){ displayActivity(); }
-function displayActivity(){
-  const tbody = document.getElementById('activityBody');
-  let data = getLog();
-  if(actFilter){ const f=actFilter.toLowerCase(); data=data.filter(e=>(e.name||'').toLowerCase().includes(f)||(e.email||'').toLowerCase().includes(f)); }
-  if(!data.length){ tbody.innerHTML='<tr><td colspan="7" class="no-data">No activity yet.</td></tr>'; return; }
-  tbody.innerHTML = data.map((e,i) => `<tr>
+// ════════════════════════════════════════════════════════════════
+// SESSIONS
+// ════════════════════════════════════════════════════════════════
+async function renderSessions(){
+  const sessions = await getAllSessions();
+  const active=sessions.filter(s=>s.logoutTime===null);
+  const tbody=document.getElementById('sess-tbody');
+  tbody.innerHTML=active.length?active.map((s,i)=>`<tr>
     <td>${i+1}</td>
-    <td><strong>${e.name||'—'}</strong></td>
-    <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.email}</td>
-    <td><span class="pill pill-blue">${e.role||'—'}</span></td>
-    <td style="color:var(--text2);font-size:12px;font-family:'JetBrains Mono',monospace">${e.loginTime||'—'}</td>
-    <td style="color:var(--text3);font-size:12px;font-family:'JetBrains Mono',monospace">${e.logoutTime||'—'}</td>
-    <td>${e.logoutTime===null
-      ? '<span class="pill pill-green"><span class="live-dot" style="width:5px;height:5px;margin-right:3px"></span>Active</span>'
-      : (e.logoutTime||'').includes('forced')
-        ? '<span class="pill pill-amber">Force Ended</span>'
-        : '<span class="pill pill-muted">Ended</span>'}</td>
-  </tr>`).join('');
+    <td><strong>${s.name||'—'}</strong></td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${s.email}</td>
+    <td><span class="pill p-blue">${s.role||'—'}</span></td>
+    <td><span class="dtag">${s.device||'Desktop'}</span></td>
+    <td style="font-size:11px;color:var(--text2)">${s.os||'—'} / ${s.browser||'—'}</td>
+    <td style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3)">${s.loginTime||'—'}</td>
+    <td style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:11px">${getDur(s)}</td>
+    <td style="font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--text3)">${(s.sessionId||'—').slice(-8)}</td>
+    <td><button class="btn btn-r" style="padding:3px 9px;font-size:9px" onclick="forceEnd('${s.sessionId||''}')">Force End</button></td>
+  </tr>`).join(''):'<tr><td colspan="10" class="no-data">No active sessions.</td></tr>';
+  const rtbody=document.getElementById('recent-sess-tbody');
+  const recent=sessions.slice(0,50);
+  rtbody.innerHTML=recent.length?recent.map((s,i)=>`<tr>
+    <td>${i+1}</td>
+    <td><strong>${s.name||'—'}</strong><br><span style="font-size:10px;color:var(--text3)">${s.email}</span></td>
+    <td><span class="dtag">${s.device||'—'}</span></td>
+    <td style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3)">${s.loginTime||'—'}</td>
+    <td style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3)">${s.logoutTime||'—'}</td>
+    <td>${s.logoutTime===null?'<span class="pill p-green"><span class="sync-dot live" style="width:5px;height:5px"></span>Active</span>':s.logoutTime?.includes?.('forced')?'<span class="pill p-amber">Forced</span>':'<span class="pill p-muted">Ended</span>'}</td>
+  </tr>`).join(''):'<tr><td colspan="6" class="no-data">No session history yet.</td></tr>';
 }
-function filterActivity(v){ actFilter=v; displayActivity(); }
-function clearLog(){ if(!confirm('Clear all login activity?')) return; saveLog([]); renderActivity(); renderDashboard(); renderLiveSessions(); }
+async function forceEnd(sid){
+  if(!sid||!confirm('Force this session to end?')) return;
+  const sessions=await getAllSessions();
+  const e=sessions.find(s=>s.sessionId===sid);
+  if(e){e.logoutTime=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' (admin)'; e.ts=(e.ts||0);}
+  await dbSet(KEYS.SESSIONS, sessions); await renderSessions();
+}
 
-// ════════════════════════════════════════════════════════════
-// PROGRESS TABLE
-// ════════════════════════════════════════════════════════════
-let progFilter='';
-function renderProgress(){ displayProgress(); }
-function displayProgress(){
-  const tbody=document.getElementById('progressBody');
-  let users=getUsers();
-  if(progFilter){ const f=progFilter.toLowerCase(); users=users.filter(u=>(u.name||'').toLowerCase().includes(f)||(u.email||'').toLowerCase().includes(f)); }
-  if(!users.length){ tbody.innerHTML='<tr><td colspan="10" class="no-data">No users yet.</td></tr>'; return; }
-  tbody.innerHTML = users.map((u,i)=>{
-    const {cplHist,atplHist,cplStudy,atplStudy,atplDone} = getUserProgress(u.email);
-    const cplBest = cplHist.length ? Math.max(...cplHist.map(h=>h.pct)) : null;
-    const atplBest = atplHist.length ? Math.max(...atplHist.map(h=>h.pct)) : null;
-    const doneCount = Object.values(atplDone).filter(Boolean).length;
-    const orig = getUsers().findIndex(x=>x.email===u.email);
+// ════════════════════════════════════════════════════════════════
+// ACTIVITY
+// ════════════════════════════════════════════════════════════════
+let _actFilter='';
+async function renderActivity(){ displayActivity(); }
+async function displayActivity(){
+  let events=await getAllEvents();
+  const tf=document.getElementById('actTypeFilter')?.value||'';
+  const sf=_actFilter.toLowerCase();
+  if(tf) events=events.filter(e=>e.type===tf);
+  if(sf) events=events.filter(e=>(e.name||'').toLowerCase().includes(sf)||(e.email||'').toLowerCase().includes(sf));
+  const icons={login:'🔑',signup:'✨',logout:'🚪',cpl_exam:'✈️',atpl_mock:'🌍',cpl_study:'📚',atpl_study:'📖'};
+  const typeColors={login:'p-blue',signup:'p-green',logout:'p-muted',cpl_exam:'p-amber',atpl_mock:'p-purple',cpl_study:'p-cyan',atpl_study:'p-cyan'};
+  const tbody=document.getElementById('act-tbody');
+  tbody.innerHTML=events.length?events.map((e,i)=>`<tr>
+    <td>${i+1}</td>
+    <td><span class="pill ${typeColors[e.type]||'p-muted'}">${icons[e.type]||'📌'} ${e.type}</span></td>
+    <td><strong>${e.name||'—'}</strong></td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${e.email||'—'}</td>
+    <td><span class="dtag">${e.device||'—'}</span></td>
+    <td style="font-size:11px;color:var(--text2)">${e.os||'—'}</td>
+    <td style="font-size:11px;color:var(--text2)">${formatEvent(e)}</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)">${e.time||'—'}</td>
+  </tr>`).join(''):'<tr><td colspan="8" class="no-data">No events yet.</td></tr>';
+}
+function filterActivity(v){ if(v!=='')_actFilter=v; displayActivity(); }
+async function clearEvents(){ if(!confirm('Clear all events?')) return; await dbSet(KEYS.EVENTS,[]); await renderActivity(); }
+
+// ════════════════════════════════════════════════════════════════
+// PROGRESS
+// ════════════════════════════════════════════════════════════════
+let _progFilter='';
+async function renderProgress(){ displayProgress(); }
+async function displayProgress(){
+  const [users, progress] = await Promise.all([getAllUsers(), getAllProgress()]);
+  let data=users; const f=_progFilter.toLowerCase();
+  if(f) data=data.filter(u=>(u.name||'').toLowerCase().includes(f)||(u.email||'').toLowerCase().includes(f));
+  const tbody=document.getElementById('prog-tbody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="11" class="no-data">No users.</td></tr>';return;}
+  tbody.innerHTML=data.map((u,i)=>{
+    const p=progress[u.email]||{};const ch=p.cpl_exam||[];const ah=p.atpl_mock||[];
+    const cb=ch.length?Math.max(...ch.map(h=>h.pct)):null;
+    const ab=ah.length?Math.max(...ah.map(h=>h.pct)):null;
+    const done=Object.values(p.atpl_subjects||{}).filter(Boolean).length;
+    const orig=users.indexOf(u);
     return `<tr>
       <td>${i+1}</td>
-      <td><strong>${u.name||'—'}</strong><br><span style="font-size:11px;color:var(--text3)">${u.email}</span></td>
-      <td>${cplBest!==null?`<span style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${cplBest>=70?'var(--green)':'var(--red)'}">${cplBest}%</span>`:'<span style="color:var(--text3)">—</span>'}</td>
-      <td><span class="pill pill-blue">${cplHist.length}</span></td>
-      <td>${atplBest!==null?`<span style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${atplBest>=70?'var(--green)':'var(--red)'}">${atplBest}%</span>`:'<span style="color:var(--text3)">—</span>'}</td>
-      <td><span class="pill pill-purple">${atplHist.length}</span></td>
-      <td>
-        <div class="score-bar-wrap"><div class="score-bar" style="min-width:80px"><div class="score-fill pass" style="width:${doneCount/11*100}%"></div></div>
-        <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2)">${doneCount}/11</span></div>
-      </td>
-      <td>${cplStudy?'<span class="pill pill-amber">💾 Saved</span>':'<span style="color:var(--text3)">—</span>'}</td>
-      <td>${atplStudy?'<span class="pill pill-amber">💾 Saved</span>':'<span style="color:var(--text3)">—</span>'}</td>
-      <td><button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="openDetail(${orig})">Details</button></td>
+      <td><strong>${u.name||'—'}</strong></td>
+      <td style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">${u.email}</td>
+      <td>${cb!==null?`<span style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${cb>=70?'var(--green)':'var(--red)'}">${cb}%</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td><span class="pill p-blue">${ch.length}</span></td>
+      <td>${ab!==null?`<span style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${ab>=70?'var(--green)':'var(--red)'}">${ab}%</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td><span class="pill p-purple">${ah.length}</span></td>
+      <td><div class="sbar-row"><div class="sbar" style="min-width:60px"><div class="sbar-fill pass" style="width:${done/11*100}%"></div></div><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text2)">${done}/11</span></div></td>
+      <td>${p.cpl_study_saved?'<span class="pill p-amber">💾 Yes</span>':'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${p.atpl_study_saved?'<span class="pill p-amber">💾 Yes</span>':'<span style="color:var(--text3)">—</span>'}</td>
+      <td><button class="btn btn-o" style="padding:3px 9px;font-size:9px" onclick="openDetail(${orig})">View</button></td>
     </tr>`;
   }).join('');
 }
-function filterProgress(v){ progFilter=v; displayProgress(); }
+function filterProgress(v){ _progFilter=v; displayProgress(); }
 
-// ════════════════════════════════════════════════════════════
-// EXAM RESULTS
-// ════════════════════════════════════════════════════════════
-function renderExams(){
-  const users=getUsers();
+// ════════════════════════════════════════════════════════════════
+// EXAMS
+// ════════════════════════════════════════════════════════════════
+async function renderExams(){
+  const [users, progress] = await Promise.all([getAllUsers(), getAllProgress()]);
   let cplRows=[], atplRows=[];
   users.forEach(u=>{
-    const {cplHist,atplHist}=getUserProgress(u.email);
-    cplHist.forEach(h=>cplRows.push({...h,name:u.name,email:u.email}));
-    atplHist.forEach(h=>atplRows.push({...h,name:u.name,email:u.email}));
+    const p=progress[u.email]||{};
+    (p.cpl_exam||[]).forEach(h=>cplRows.push({...h,name:u.name,email:u.email}));
+    (p.atpl_mock||[]).forEach(h=>atplRows.push({...h,name:u.name,email:u.email}));
   });
   cplRows.sort((a,b)=>(b.pct||0)-(a.pct||0));
   atplRows.sort((a,b)=>(b.pct||0)-(a.pct||0));
-
-  const examRow=(r,i)=>`<tr>
+  const row=(r,i)=>`<tr>
     <td>${i+1}</td>
-    <td><strong>${r.name||'—'}</strong><br><span style="font-size:11px;color:var(--text3)">${r.email}</span></td>
-    <td style="color:var(--text3);font-size:11px;font-family:'JetBrains Mono',monospace">${r.date||'—'}</td>
-    <td><div class="score-bar-wrap"><div class="score-bar"><div class="score-fill ${r.pct>=70?'pass':'fail'}" style="width:${r.pct}%"></div></div><span class="score-num ${r.pct>=70?'pass':'fail'}">${r.pct}%</span></div></td>
+    <td><strong>${r.name||'—'}</strong><br><span style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">${r.email}</span></td>
+    <td style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace">${r.date||'—'}</td>
+    <td><div class="sbar-row"><div class="sbar"><div class="sbar-fill ${r.pct>=70?'pass':'fail'}" style="width:${r.pct}%"></div></div><span class="snum ${r.pct>=70?'pass':'fail'}">${r.pct}%</span></div></td>
     <td style="color:var(--green);font-family:'JetBrains Mono',monospace">${r.correct}</td>
     <td style="color:var(--red);font-family:'JetBrains Mono',monospace">${r.wrong||0}</td>
     <td style="color:var(--amber);font-family:'JetBrains Mono',monospace">${r.skipped||0}</td>
-    <td><span class="pill ${r.passed?'pill-green':'pill-red'}">${r.passed?'PASS':'FAIL'}</span></td>
+    <td><span class="pill ${r.passed?'p-green':'p-red'}">${r.passed?'PASS':'FAIL'}</span></td>
   </tr>`;
-
-  const cplBody=document.getElementById('cplExamsBody');
-  const atplBody=document.getElementById('atplExamsBody');
-  cplBody.innerHTML=cplRows.length?cplRows.map(examRow).join(''):'<tr><td colspan="8" class="no-data">No CPL exam results yet.</td></tr>';
-  atplBody.innerHTML=atplRows.length?atplRows.map(examRow).join(''):'<tr><td colspan="8" class="no-data">No ATPL exam results yet.</td></tr>';
+  document.getElementById('cpl-exam-tbody').innerHTML=cplRows.length?cplRows.map(row).join(''):'<tr><td colspan="8" class="no-data">No CPL exam results.</td></tr>';
+  document.getElementById('atpl-exam-tbody').innerHTML=atplRows.length?atplRows.map(row).join(''):'<tr><td colspan="8" class="no-data">No ATPL exam results.</td></tr>';
 }
 
-// ════════════════════════════════════════════════════════════
-// EDIT USER MODAL
-// ════════════════════════════════════════════════════════════
-let editIdx=-1;
-
-function openEdit(idx){
-  const u=getUsers()[idx]; if(!u) return;
-  editIdx=idx;
-  document.getElementById('modalTitle').textContent='Edit User';
+// ════════════════════════════════════════════════════════════════
+// EDIT / DETAIL MODAL
+// ════════════════════════════════════════════════════════════════
+let _editIdx=-1;
+async function openEdit(idx){
+  _editIdx=idx; const u=_users[idx]||((await getAllUsers())[idx]); if(!u) return;
+  document.getElementById('modalH').textContent='Edit User';
   document.getElementById('modalSub').textContent=u.name+' · '+u.email;
   document.getElementById('editForm').classList.remove('hidden');
   document.getElementById('detailView').classList.add('hidden');
-  document.getElementById('editEmail').value=u.email;
-  document.getElementById('editRole').value=u.role||'Student';
-  document.getElementById('editPw').value=''; document.getElementById('editPwC').value='';
-  document.getElementById('editPw').type='password'; document.getElementById('editPwC').type='password';
-  document.getElementById('editPwE').textContent='👁'; document.getElementById('editPwCE').textContent='👁';
-  showMsgModal('','');
-  document.getElementById('saveBtn').classList.remove('hidden');
-  document.getElementById('deleteBtn').classList.remove('hidden');
-  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('eEmail').value=u.email;document.getElementById('eRole').value=u.role||'Student';
+  document.getElementById('ePw').value='';document.getElementById('ePwC').value='';
+  ['ePw','ePwC'].forEach(id=>{document.getElementById(id).type='password';});
+  ['ePwE','ePwCE'].forEach(id=>{document.getElementById(id).textContent='👁';});
+  showMbar('','');document.getElementById('saveBtn').classList.remove('hidden');document.getElementById('delBtn').classList.remove('hidden');
+  document.getElementById('modal-bg').classList.add('open');
 }
-
-function openDetail(idx){
-  const u=getUsers()[idx]; if(!u) return;
-  editIdx=idx;
-  const {cplHist,atplHist,cplStudy,atplStudy,atplDone}=getUserProgress(u.email);
-  const cplBest=cplHist.length?Math.max(...cplHist.map(h=>h.pct)):null;
-  const atplBest=atplHist.length?Math.max(...atplHist.map(h=>h.pct)):null;
-  const doneSubjs=Object.entries(atplDone).filter(([,v])=>v).map(([k])=>k);
-
-  document.getElementById('modalTitle').textContent='User Profile';
-  document.getElementById('modalSub').textContent='Full profile and activity overview';
+async function openDetail(idx){
+  const u=(_users[idx])||((await getAllUsers())[idx]); if(!u) return;
+  _editIdx=idx;
+  const [progress,sessions]=await Promise.all([getAllProgress(),getAllSessions()]);
+  const p=progress[u.email]||{};const ch=p.cpl_exam||[];const ah=p.atpl_mock||[];
+  const cb=ch.length?Math.max(...ch.map(h=>h.pct)):null;const ab=ah.length?Math.max(...ah.map(h=>h.pct)):null;
+  const doneSubjs=Object.entries(p.atpl_subjects||{}).filter(([,v])=>v).map(([k])=>k);
+  const lastSess=sessions.find(s=>s.email===u.email);
+  const isActive=sessions.some(s=>s.email===u.email&&s.logoutTime===null);
+  document.getElementById('modalH').textContent='User Profile';
+  document.getElementById('modalSub').textContent='Full cross-device profile';
   document.getElementById('editForm').classList.add('hidden');
   document.getElementById('detailView').classList.remove('hidden');
-  document.getElementById('saveBtn').classList.add('hidden');
-  document.getElementById('deleteBtn').classList.remove('hidden');
-  showMsgModal('','');
-
-  document.getElementById('detailPanel').innerHTML=`
-    <div class="dp-head">
-      <div class="dp-avatar">${(u.name||'?').charAt(0).toUpperCase()}</div>
-      <div><div class="dp-name">${u.name||'—'}</div><div class="dp-email">${u.email}</div></div>
-      <span class="pill pill-blue" style="margin-left:auto">${u.role||'—'}</span>
+  document.getElementById('saveBtn').classList.add('hidden');document.getElementById('delBtn').classList.remove('hidden');
+  showMbar('','');
+  document.getElementById('profileCard').innerHTML=`
+    <div class="profile-head">
+      <div class="profile-av">${(u.name||'?').charAt(0).toUpperCase()}</div>
+      <div><div class="profile-name">${u.name||'—'} ${isActive?'<span class="pill p-green" style="font-size:9px"><span class="sync-dot live" style="width:5px;height:5px"></span>Online</span>':''}</div><div class="profile-email">${u.email}</div></div>
+      <span class="pill p-blue" style="margin-left:auto">${u.role||'—'}</span>
     </div>
-    <div class="dp-grid" style="margin-bottom:14px">
-      <div class="dp-item"><label>Registered</label><div class="val" style="font-size:11px;color:var(--text2)">${u.registeredAt||'—'}</div></div>
-      <div class="dp-item"><label>CPL Exams</label><div class="val">${cplHist.length}</div></div>
-      <div class="dp-item"><label>ATPL Mocks</label><div class="val">${atplHist.length}</div></div>
+    <div class="profile-grid" style="margin-bottom:14px">
+      <div class="pg-item"><label>Registered</label><div class="val" style="font-size:11px;color:var(--text2)">${u.registeredAt||'—'}</div></div>
+      <div class="pg-item"><label>CPL Exams</label><div class="val">${ch.length}</div></div>
+      <div class="pg-item"><label>ATPL Mocks</label><div class="val">${ah.length}</div></div>
+      <div class="pg-item"><label>Last Device</label><div class="val" style="font-size:12px">${lastSess?.device||'—'}</div></div>
+      <div class="pg-item"><label>Last Login</label><div class="val" style="font-size:11px;color:var(--text2)">${lastSess?.loginTime||'—'}</div></div>
+      <div class="pg-item"><label>Last Browser</label><div class="val" style="font-size:12px">${lastSess?.browser||'—'}</div></div>
     </div>
-    <div class="progress-section">
-      <div class="progress-label"><span>CPL Best Score</span><span>${cplBest!==null?cplBest+'%':'No exams'}</span></div>
-      <div class="progress-track"><div class="progress-fill pf-blue" style="width:${cplBest||0}%"></div></div>
-    </div>
-    <div class="progress-section">
-      <div class="progress-label"><span>ATPL Best Score</span><span>${atplBest!==null?atplBest+'%':'No mocks'}</span></div>
-      <div class="progress-track"><div class="progress-fill pf-purple" style="width:${atplBest||0}%"></div></div>
-    </div>
-    <div class="progress-section">
-      <div class="progress-label"><span>ATPL Subjects Completed</span><span>${doneSubjs.length} / 11</span></div>
-      <div class="progress-track"><div class="progress-fill pf-green" style="width:${doneSubjs.length/11*100}%"></div></div>
-    </div>
-    ${doneSubjs.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">${doneSubjs.map(s=>`<span class="pill pill-green" style="font-size:9px">✓ ${s}</span>`).join('')}</div>`:''}
-    <div style="margin-top:12px;display:flex;gap:7px;flex-wrap:wrap">
-      ${cplStudy?'<span class="pill pill-amber">CPL Session Saved</span>':''}
-      ${atplStudy?'<span class="pill pill-amber">ATPL Session Saved</span>':''}
-    </div>`;
-  document.getElementById('modal-overlay').classList.add('open');
+    <div class="progress-item"><div class="progress-lbl"><span>CPL Best Score</span><span>${cb!==null?cb+'%':'No exams'}</span></div><div class="progress-track"><div class="progress-bar-fill pbf-blue" style="width:${cb||0}%"></div></div></div>
+    <div class="progress-item"><div class="progress-lbl"><span>ATPL Best Score</span><span>${ab!==null?ab+'%':'No mocks'}</span></div><div class="progress-track"><div class="progress-bar-fill pbf-purple" style="width:${ab||0}%"></div></div></div>
+    <div class="progress-item"><div class="progress-lbl"><span>ATPL Subjects Completed</span><span>${doneSubjs.length} / 11</span></div><div class="progress-track"><div class="progress-bar-fill pbf-green" style="width:${doneSubjs.length/11*100}%"></div></div></div>
+    ${doneSubjs.length?`<div class="subj-chips">${doneSubjs.map(s=>`<span class="pill p-green" style="font-size:9px">✓ ${s}</span>`).join('')}</div>`:''}
+    <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+      ${p.cpl_study_saved?'<span class="pill p-amber">CPL Session Saved</span>':''} ${p.atpl_study_saved?'<span class="pill p-amber">ATPL Session Saved</span>':''}</div>`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');_editIdx=-1;}
+document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target===this)closeModal();});
+function showMbar(m,t){const el=document.getElementById('mbar');if(!m){el.className='mbar';return;}el.className=`mbar show ${t}`;el.innerHTML=(t==='ok'?'✓ ':'⚠ ')+m;}
+async function deleteModal(){
+  const u=_users[_editIdx]; if(!u||!confirm(`Permanently delete ${u.name}?`)) return;
+  ['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>localStorage.removeItem(lsKey(u.email,s)));
+  _users.splice(_editIdx,1); await saveAllUsers(_users);
+  const prog=await getAllProgress(); delete prog[u.email]; await dbSet(KEYS.PROGRESS,prog);
+  closeModal(); await renderUsers(); await renderDashboard();
+}
+async function saveEdit(){
+  const allU=await getAllUsers(); const u=allU[_editIdx]; if(!u) return;
+  const ne=(document.getElementById('eEmail').value||'').trim().toLowerCase();
+  const nr=document.getElementById('eRole').value;
+  const np=document.getElementById('ePw').value;const cp=document.getElementById('ePwC').value;
+  if(!ne||!/^[^@]+@[^@]+\.[^@]+$/.test(ne)) return showMbar('Enter a valid email.','err');
+  if(allU.find((x,i)=>i!==_editIdx&&x.email===ne)) return showMbar('Email already in use.','err');
+  if(np){if(np.length<6) return showMbar('Min 6 chars.','err'); if(np!==cp) return showMbar('Passwords don\'t match.','err');}
+  const oe=u.email;
+  if(ne!==oe){['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>{const v=lsGet(lsKey(oe,s));if(v)localStorage.setItem(lsKey(ne,s),JSON.stringify(v));localStorage.removeItem(lsKey(oe,s));});}
+  u.email=ne; u.role=nr; if(np)u.password=np;
+  allU[_editIdx]=u; await saveAllUsers(allU); _users=allU;
+  showMbar('User updated.','ok'); setTimeout(()=>{closeModal();renderUsers();},800);
 }
 
-function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); editIdx=-1; }
-document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
-
-function showMsgModal(msg,type){
-  const el=document.getElementById('modalMsg');
-  if(!msg){el.className='modal-msg';return;}
-  el.className=`modal-msg show ${type}`;
-  el.innerHTML=(type==='ok'?'✓ ':'⚠ ')+msg;
-}
-
-function deleteUserFromModal(){
-  if(editIdx<0) return;
-  const u=getUsers()[editIdx];
-  if(!u||!confirm(`Permanently delete ${u.name}? All data will be erased.`)) return;
-  ['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>lsDel(lsKey(u.email,s)));
-  const users=getUsers(); users.splice(editIdx,1); saveUsers(users);
-  closeModal(); renderUsers(); renderDashboard(); renderProgress(); renderExams();
-}
-
-function saveEdit(){
-  const users=getUsers(); const u=users[editIdx]; if(!u) return;
-  const newEmail=(document.getElementById('editEmail').value||'').trim().toLowerCase();
-  const newRole=document.getElementById('editRole').value;
-  const newPw=document.getElementById('editPw').value;
-  const confPw=document.getElementById('editPwC').value;
-  if(!newEmail||!/^[^@]+@[^@]+\.[^@]+$/.test(newEmail)) return showMsgModal('Enter a valid email.','err');
-  if(users.find((x,i)=>i!==editIdx&&x.email===newEmail)) return showMsgModal('Email already in use by another account.','err');
-  if(newPw){ if(newPw.length<6) return showMsgModal('Password must be at least 6 characters.','err'); if(newPw!==confPw) return showMsgModal('Passwords do not match.','err'); }
-  const oldEmail=u.email;
-  if(newEmail!==oldEmail){ ['cpl_study','atpl_study','cpl_exhist','atpl_exhist','atpl_completed_subjects'].forEach(s=>{const v=ls(lsKey(oldEmail,s));if(v)lsSet(lsKey(newEmail,s),v);lsDel(lsKey(oldEmail,s));}); }
-  u.email=newEmail; u.role=newRole; if(newPw)u.password=newPw;
-  users[editIdx]=u; saveUsers(users);
-  const changed=[]; if(newEmail!==oldEmail)changed.push('email'); changed.push('role'); if(newPw)changed.push('password');
-  showMsgModal(changed.join(', ').replace(/,([^,]*)$/,' and$1')+' updated.','ok');
-  setTimeout(()=>{ closeModal(); renderUsers(); renderDashboard(); },900);
-}
-
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // SETTINGS
-// ════════════════════════════════════════════════════════════
-function renderSettings(){
-  document.getElementById('credEmail').value=ADMIN_EMAIL;
-  document.getElementById('credCurShow').textContent=ADMIN_EMAIL;
-  ['credCur','credNew','credConf'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).type='password';});
-  ['credEye0','credEye1','credEye2'].forEach(id=>document.getElementById(id).textContent='👁');
-  showCredMsg('','');
-}
-function showCredMsg(msg,type){ const el=document.getElementById('credMsg'); if(!msg){el.className='modal-msg';return;} el.className=`modal-msg show ${type}`; el.innerHTML=(type==='ok'?'✓ ':'⚠ ')+msg; }
+// ════════════════════════════════════════════════════════════════
+function showCredBar(m,t){const el=document.getElementById('credBar');if(!m){el.className='mbar';return;}el.className=`mbar show ${t}`;el.innerHTML=(t==='ok'?'✓ ':'⚠ ')+m;}
 function saveCreds(){
   const ne=(document.getElementById('credEmail').value||'').trim().toLowerCase();
-  const cur=document.getElementById('credCur').value;
-  const np=document.getElementById('credNew').value;
-  const cp=document.getElementById('credConf').value;
-  if(!cur) return showCredMsg('Current password required.','err');
-  if(cur!==ADMIN_PASSWORD) return showCredMsg('Current password incorrect.','err');
-  if(!ne||!/^[^@]+@[^@]+\.[^@]+$/.test(ne)) return showCredMsg('Enter a valid email.','err');
-  if(np){if(np.length<6) return showCredMsg('Min 6 characters.','err'); if(np!==cp) return showCredMsg('Passwords do not match.','err');}
-  ADMIN_EMAIL=ne; if(np)ADMIN_PASSWORD=np;
-  lsSet('examhub_admin_creds',{email:ADMIN_EMAIL,password:ADMIN_PASSWORD});
-  document.getElementById('credCurShow').textContent=ADMIN_EMAIL;
-  document.getElementById('sideAdminEmail').textContent=ADMIN_EMAIL.split('@')[0];
-  document.getElementById('credCurShow').textContent=ADMIN_EMAIL;
+  const cur=document.getElementById('credCur').value;const np=document.getElementById('credNew').value;const cp=document.getElementById('credConf').value;
+  if(!cur) return showCredBar('Current password required.','err');
+  if(cur!==ADMIN_PASSWORD) return showCredBar('Current password incorrect.','err');
+  if(!ne||!/^[^@]+@[^@]+\.[^@]+$/.test(ne)) return showCredBar('Enter a valid email.','err');
+  if(np){if(np.length<6) return showCredBar('Min 6 chars.','err'); if(np!==cp) return showCredBar('Passwords don\'t match.','err');}
+  ADMIN_EMAIL=ne; if(np) ADMIN_PASSWORD=np;
+  localStorage.setItem('examhub_admin_creds',JSON.stringify({email:ADMIN_EMAIL,password:ADMIN_PASSWORD}));
+  document.getElementById('adminLbl').textContent=ADMIN_EMAIL.split('@')[0];
+  document.getElementById('curEmailLbl').textContent=ADMIN_EMAIL;
   ['credCur','credNew','credConf'].forEach(id=>document.getElementById(id).value='');
-  showCredMsg(np?'Email and password updated.':'Email updated.','ok');
+  showCredBar(np?'Email and password updated.':'Email updated.','ok');
 }
 
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // INIT
-// ════════════════════════════════════════════════════════════
-(function(){
-  const sess=ls('examhub_admin_session');
-  if(sess && sess.email===ADMIN_EMAIL) showApp();
+// ════════════════════════════════════════════════════════════════
+(async function(){
+  const sess=lsGet('examhub_admin_session');
+  if(sess&&sess.email===ADMIN_EMAIL) showApp();
 })();
 </script>
 </body>
