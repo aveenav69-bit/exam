@@ -674,13 +674,13 @@ async function displayUsers(){
     const isActive=sessions.some(s=>s.email===u.email&&s.logoutTime===null);
     return `<tr>
       <td>${u.idx}</td>
-      <td><div style="display:flex;align-items:center;gap:7px">${isActive?'<span class="sync-dot live" style="flex-shrink:0"></span>':'''}<strong>${u.name||'—'}</strong></div></td>
+      <td><div style="display:flex;align-items:center;gap:7px">${isActive?'<span class="sync-dot live" style="flex-shrink:0"></span>':''}<strong>${u.name||'—'}</strong></div></td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)">${u.email}</td>
       <td><span class="pill p-blue">${u.role||'—'}</span></td>
       <td style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">${u.registeredAt||'—'}</td>
-      <td>${cb!==null?`<div class="sbar-row"><div class="sbar"><div class="sbar-fill ${cb>=70?'pass':'fail'}" style="width:${cb}%"></div></div><span class="snum ${cb>=70?'pass':'fail'}">${cb}%</span></div>`:'<span style="color:var(--text3)">—</span>'}</td>
-      <td>${ab!==null?`<div class="sbar-row"><div class="sbar"><div class="sbar-fill ${ab>=70?'pass':'fail'}" style="width:${ab}%"></div></div><span class="snum ${ab>=70?'pass':'fail'}">${ab}%</span></div>`:'<span style="color:var(--text3)">—</span>'}</td>
-      <td>${ls2?`<span class="dtag">${ls2.device||'—'}</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${cb!==null?'<div class="sbar-row"><div class="sbar"><div class="sbar-fill '+(cb>=70?'pass':'fail')+'" style="width:'+cb+'%"></div></div><span class="snum '+(cb>=70?'pass':'fail')+'">'+cb+'%</span></div>':'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${ab!==null?'<div class="sbar-row"><div class="sbar"><div class="sbar-fill '+(ab>=70?'pass':'fail')+'" style="width:'+ab+'%"></div></div><span class="snum '+(ab>=70?'pass':'fail')+'">'+ab+'%</span></div>':'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${ls2?'<span class="dtag">'+(ls2.device||'—')+'</span>':'<span style="color:var(--text3)">—</span>'}</td>
       <td style="display:flex;gap:4px">
         <button class="btn btn-b" style="padding:3px 9px" onclick="openEdit(${orig})">✎</button>
         <button class="btn btn-o" style="padding:3px 9px" onclick="openDetail(${orig})">👁</button>
@@ -803,9 +803,9 @@ async function displayProgress(){
       <td>${i+1}</td>
       <td><strong>${u.name||'—'}</strong></td>
       <td style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">${u.email}</td>
-      <td>${cb!==null?`<span style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${cb>=70?'var(--green)':'var(--red)'}">${cb}%</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${cb!==null?'<span style="font-family:JetBrains Mono,monospace;font-weight:600;color:'+(cb>=70?'var(--green)':'var(--red)')+'">'+cb+'%</span>':'<span style="color:var(--text3)">—</span>'}</td>
       <td><span class="pill p-blue">${ch.length}</span></td>
-      <td>${ab!==null?`<span style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${ab>=70?'var(--green)':'var(--red)'}">${ab}%</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${ab!==null?'<span style="font-family:JetBrains Mono,monospace;font-weight:600;color:'+(ab>=70?'var(--green)':'var(--red)')+'">'+ab+'%</span>':'<span style="color:var(--text3)">—</span>'}</td>
       <td><span class="pill p-purple">${ah.length}</span></td>
       <td><div class="sbar-row"><div class="sbar" style="min-width:60px"><div class="sbar-fill pass" style="width:${done/11*100}%"></div></div><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text2)">${done}/11</span></div></td>
       <td>${p.cpl_study_saved?'<span class="pill p-amber">💾 Yes</span>':'<span style="color:var(--text3)">—</span>'}</td>
@@ -892,7 +892,7 @@ async function openDetail(idx){
     <div class="progress-item"><div class="progress-lbl"><span>CPL Best Score</span><span>${cb!==null?cb+'%':'No exams'}</span></div><div class="progress-track"><div class="progress-bar-fill pbf-blue" style="width:${cb||0}%"></div></div></div>
     <div class="progress-item"><div class="progress-lbl"><span>ATPL Best Score</span><span>${ab!==null?ab+'%':'No mocks'}</span></div><div class="progress-track"><div class="progress-bar-fill pbf-purple" style="width:${ab||0}%"></div></div></div>
     <div class="progress-item"><div class="progress-lbl"><span>ATPL Subjects Completed</span><span>${doneSubjs.length} / 11</span></div><div class="progress-track"><div class="progress-bar-fill pbf-green" style="width:${doneSubjs.length/11*100}%"></div></div></div>
-    ${doneSubjs.length?`<div class="subj-chips">${doneSubjs.map(s=>`<span class="pill p-green" style="font-size:9px">✓ ${s}</span>`).join('')}</div>`:''}
+    ${doneSubjs.length?'<div class="subj-chips">'+doneSubjs.map(s=>'<span class="pill p-green" style="font-size:9px">✓ '+s+'</span>').join('')+'</div>':''}
     <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
       ${p.cpl_study_saved?'<span class="pill p-amber">CPL Session Saved</span>':''} ${p.atpl_study_saved?'<span class="pill p-amber">ATPL Session Saved</span>':''}</div>`;
   document.getElementById('modal-bg').classList.add('open');
